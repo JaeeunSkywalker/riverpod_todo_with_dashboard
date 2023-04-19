@@ -14,12 +14,30 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: const [
-          Expanded(child: HomeBanner()),
-          Expanded(child: HomeMiddleScreen()),
-          Expanded(child: HomeBottomScreen()),
-        ],
+      body: Center(
+        child: Column(
+          children: const [
+            Expanded(
+              child: Center(child: HomeBanner()),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                "🌱",
+                style: TextStyle(
+                  fontFamily: 'NotoColorEmoji',
+                  fontSize: 30.0,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Center(child: HomeMiddleScreen()),
+            ),
+            Expanded(
+              child: Center(child: HomeBottomScreen()),
+            ),
+          ],
+        ),
       ),
     );
   }

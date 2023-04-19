@@ -34,6 +34,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  table_calendar: ^3.0.9
+  intl: ^0.18.1
+  drift: ^2.7.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +50,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  drift_dev: ^2.7.0
+  build_runner: ^2.3.3
+
+dependency_overrides:
+  path: ^1.8.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -73,7 +83,28 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: NotoSansKR
+      fonts:
+        - asset: assets/fonts/NotoSansKR-Thin100.otf
+          weight: 100
+        - asset: assets/fonts/NotoSansKR-Light300.otf
+          weight: 300
+        - asset: assets/fonts/NotoSansKR-Regular400.otf
+          weight: 400
+        - asset: assets/fonts/NotoSansKR-Medium500.otf
+          weight: 500
+        - asset: assets/fonts/NotoSansKR-Bold700.otf
+          weight: 700
+        - asset: assets/fonts/NotoSansKR-Black900.otf
+          weight: 900
+    - family: SingleDay
+      fonts:
+        - asset: assets/fonts/SingleDay-Regular.ttf
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/fonts/NotoColorEmoji-Regular.ttf
+
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

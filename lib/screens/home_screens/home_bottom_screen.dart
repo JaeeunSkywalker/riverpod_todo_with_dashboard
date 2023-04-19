@@ -17,11 +17,12 @@ class _HomeBottomScreenState extends State<HomeBottomScreen> {
       children: [
         _Button(
           //TODO: 1번
+          //구글 로그인을 구현해야 한다.
           buttonMessage: '구글 로그인 들어갈 자리',
           onPressed: () {},
         ),
         const SizedBox(
-          height: 40.0,
+          height: 20.0,
         ),
         _Button(
           buttonMessage: '회원가입(및 로그인) 없이 사용하기',
@@ -48,21 +49,21 @@ class _Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(
-        color: Colors.grey,
-        width: 1.5,
-      )),
-      height: 70,
-      child: TextButton(
-        onPressed: onPressed,
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            border: Border.all(
+          color: Colors.grey,
+          width: 1.5,
+        )),
+        height: 70,
         child: Text(
           buttonMessage,
           style: const TextStyle(
             fontSize: 20.0,
             color: black,
-            fontWeight: FontWeight.w400,
           ),
         ),
       ),
