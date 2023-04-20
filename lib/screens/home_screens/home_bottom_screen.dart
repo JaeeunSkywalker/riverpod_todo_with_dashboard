@@ -16,8 +16,7 @@ class _HomeBottomScreenState extends State<HomeBottomScreen> {
     return Column(
       children: [
         _Button(
-          //TODO: 1번
-          //구글 로그인을 구현해야 한다.
+          //TODO 1번: 구글 로그인 구현
           buttonMessage: '구글 로그인 들어갈 자리',
           onPressed: () {},
         ),

@@ -45,7 +45,7 @@ class _TodayBannerState extends State<TodayBanner> {
             InkWell(
               onTap: () {
                 setState(() {
-                  //TODO: 2번
+                  //TODO: 2번 오늘로 돌아가기 버튼 기능 구현
                   //오늘로 돌아가기를 눌렀을 때
                   //왼쪽 칸 날짜와 캘린더에서
                   //내용이 오늘자로 변경되어야 한다.

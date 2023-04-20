@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_todo_with_dashboard/component/calendar.dart';
+import 'package:riverpod_todo_with_dashboard/component/schedule_bottom_sheet.dart';
 import 'package:riverpod_todo_with_dashboard/component/schedule_card.dart';
 import 'package:riverpod_todo_with_dashboard/component/today_banner.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
@@ -24,26 +25,29 @@ class _NonLoginMainState extends State<NonLoginMain> {
     return SafeArea(
       child: Scaffold(
         floatingActionButton: renderFloatingActionButton(),
-        body: Column(
-          children: [
-            Calendar(
-              selectedDay: selectedDay,
-              focusedDay: focusedDay,
-              onDaySelected: OnDaySelected,
-            ),
-            const SizedBox(
-              height: 8.0,
-            ),
-            TodayBanner(
-              selectedDay: selectedDay,
-              focusedDay: focusedDay,
-              scheduleCount: 3,
-            ),
-            const SizedBox(
-              height: 8.0,
-            ),
-            const _ScheduleList(),
-          ],
+        body: SizedBox(
+          height: MediaQuery.of(context).size.height * 1,
+          child: Column(
+            children: [
+              Calendar(
+                selectedDay: selectedDay,
+                focusedDay: focusedDay,
+                onDaySelected: OnDaySelected,
+              ),
+              const SizedBox(
+                height: 8.0,
+              ),
+              TodayBanner(
+                selectedDay: selectedDay,
+                focusedDay: focusedDay,
+                scheduleCount: 3,
+              ),
+              const SizedBox(
+                height: 8.0,
+              ),
+              const _ScheduleList(),
+            ],
+          ),
         ),
       ),
     );
@@ -52,7 +56,15 @@ class _NonLoginMainState extends State<NonLoginMain> {
   FloatingActionButton renderFloatingActionButton() {
     return FloatingActionButton(
       backgroundColor: CalendarPrimaryColor,
-      onPressed: () {},
+      onPressed: () {
+        showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (_) {
+            return const ScheduleBottomSheet();
+          },
+        );
+      },
       child: const Icon(
         Icons.add,
       ),
@@ -77,8 +89,10 @@ class _ScheduleList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
+        padding: const EdgeInsets.only(
+          left: 8.0,
+          right: 8.0,
+          bottom: 8.0,
         ),
         child: ListView.separated(
           itemCount: 10,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_todo_with_dashboard/screens/home_screens/home_banner.dart';
 import 'package:riverpod_todo_with_dashboard/screens/home_screens/home_bottom_screen.dart';
-import 'package:riverpod_todo_with_dashboard/screens/home_screens/home_middle_screen.dart';
+
+import 'home_middle_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -31,9 +32,9 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ),
               ),
-              // Expanded(
-              //   child: Center(child: HomeMiddleScreen()),
-              // ),
+              Expanded(
+                child: Center(child: HomeMiddleScreen()),
+              ),
               Expanded(
                 child: Center(child: HomeBottomScreen()),
               ),
