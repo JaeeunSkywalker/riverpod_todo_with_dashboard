@@ -13,30 +13,32 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: const [
-            Expanded(
-              child: Center(child: HomeBanner()),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                "🌱",
-                style: TextStyle(
-                  fontFamily: 'NotoColorEmoji',
-                  fontSize: 30.0,
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            children: const [
+              Expanded(
+                child: Center(child: HomeBanner()),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "🌱",
+                  style: TextStyle(
+                    fontFamily: 'NotoColorEmoji',
+                    fontSize: 30.0,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Center(child: HomeMiddleScreen()),
-            ),
-            Expanded(
-              child: Center(child: HomeBottomScreen()),
-            ),
-          ],
+              // Expanded(
+              //   child: Center(child: HomeMiddleScreen()),
+              // ),
+              Expanded(
+                child: Center(child: HomeBottomScreen()),
+              ),
+            ],
+          ),
         ),
       ),
     );

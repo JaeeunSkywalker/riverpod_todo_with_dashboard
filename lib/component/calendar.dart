@@ -61,6 +61,7 @@ class Calendar extends StatelessWidget {
         ),
       ),
       onDaySelected: onDaySelected,
+
       selectedDayPredicate: (DateTime date) {
         if (selectedDay == null) {
           return false;

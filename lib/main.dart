@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'NotoSansKR',
       ),
-      home: const SafeArea(child: MainScreen()),
+      home: const MainScreen(),
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
-import 'package:riverpod_todo_with_dashboard/screens/non_login_screens/non_login_main.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 // ignore: must_be_immutable
 class TodayBanner extends StatefulWidget {
@@ -47,9 +45,10 @@ class _TodayBannerState extends State<TodayBanner> {
             InkWell(
               onTap: () {
                 setState(() {
-                  widget.selectedDay = DateTime.now();
                   //TODO: 2번
-                  //오늘로 돌아가기를 눌렀을 때 캘린더에서도 포커스가 오늘로 변경되어야 한다.
+                  //오늘로 돌아가기를 눌렀을 때
+                  //왼쪽 칸 날짜와 캘린더에서
+                  //내용이 오늘자로 변경되어야 한다.
                 });
               },
               child: const Expanded(
