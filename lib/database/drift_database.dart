@@ -37,6 +37,8 @@ class LocalDatabase extends _$LocalDatabase {
   Future<List<CategoryEmoji>> getCategoryEmojis() =>
       select(categoryEmojis).get();
 
+  Stream<List<Schedule>> watchSchedules() => select(schedules).watch();
+
   //생성한 테이블의 상태(버전)
   //테이블 구조 바뀔 때마다 버전 올려 줘야 한다.
   @override

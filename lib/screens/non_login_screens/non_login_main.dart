@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:riverpod_todo_with_dashboard/component/calendar.dart';
 import 'package:riverpod_todo_with_dashboard/component/schedule_bottom_sheet.dart';
 import 'package:riverpod_todo_with_dashboard/component/schedule_card.dart';
 import 'package:riverpod_todo_with_dashboard/component/today_banner.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
+
+import '../../database/drift_database.dart';
 
 class NonLoginMain extends StatefulWidget {
   const NonLoginMain({super.key});
@@ -25,29 +28,26 @@ class _NonLoginMainState extends State<NonLoginMain> {
     return SafeArea(
       child: Scaffold(
         floatingActionButton: renderFloatingActionButton(),
-        body: SizedBox(
-          height: MediaQuery.of(context).size.height * 1,
-          child: Column(
-            children: [
-              Calendar(
+        body: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.56,
+              child: Calendar(
                 selectedDay: selectedDay,
                 focusedDay: focusedDay,
                 onDaySelected: OnDaySelected,
               ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              TodayBanner(
-                selectedDay: selectedDay,
-                focusedDay: focusedDay,
-                scheduleCount: 3,
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              const _ScheduleList(),
-            ],
-          ),
+            ),
+            TodayBanner(
+              selectedDay: selectedDay,
+              focusedDay: focusedDay,
+              scheduleCount: 3,
+            ),
+            const SizedBox(
+              height: 8.0,
+            ),
+            const _ScheduleList(),
+          ],
         ),
       ),
     );
@@ -61,7 +61,9 @@ class _NonLoginMainState extends State<NonLoginMain> {
           isScrollControlled: true,
           context: context,
           builder: (_) {
-            return const ScheduleBottomSheet();
+            return ScheduleBottomSheet(
+              selectedDate: selectedDay,
+            );
           },
         );
       },
@@ -94,22 +96,27 @@ class _ScheduleList extends StatelessWidget {
           right: 8.0,
           bottom: 8.0,
         ),
-        child: ListView.separated(
-          itemCount: 10,
-          separatorBuilder: (context, builder) {
-            return const SizedBox(
-              height: 8.0,
-            );
-          },
-          itemBuilder: (context, index) {
-            return const ScheduleCard(
-              startTime: 8,
-              endTime: 14,
-              content: '프로그래밍 공부하기',
-              color: Colors.red,
-            );
-          },
-        ),
+        child: StreamBuilder<List<Schedule>>(
+            stream: GetIt.I<LocalDatabase>().watchSchedules(),
+            builder: (context, snapshot) {
+              print(snapshot.data);
+              return ListView.separated(
+                itemCount: 10,
+                separatorBuilder: (context, builder) {
+                  return const SizedBox(
+                    height: 8.0,
+                  );
+                },
+                itemBuilder: (context, index) {
+                  return const ScheduleCard(
+                    startTime: 8,
+                    endTime: 14,
+                    content: '프로그래밍 공부하기',
+                    color: Colors.red,
+                  );
+                },
+              );
+            }),
       ),
     );
   }

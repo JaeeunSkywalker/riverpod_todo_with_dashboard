@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_todo_with_dashboard/component/custom_text_field.dart';
@@ -5,7 +6,10 @@ import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
 import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
-  const ScheduleBottomSheet({Key? key}) : super(key: key);
+  final DateTime selectedDate;
+
+  const ScheduleBottomSheet({required this.selectedDate, Key? key})
+      : super(key: key);
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -31,7 +35,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Container(
-        height: MediaQuery.of(context).size.height / 2 + bottomInset,
+        height: MediaQuery.of(context).size.height * 0.5 + bottomInset,
         color: white,
         child: Padding(
           padding: EdgeInsets.only(bottom: bottomInset),
@@ -119,7 +123,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     );
   }
 
-  void onSavePressed() {
+  void onSavePressed() async {
     //formKey는 생성을 했는데
     //form 위젯과 결합을 안 했을 때.
     if (formKey.currentState == null) {
@@ -127,9 +131,17 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     }
 
     if (formKey.currentState!.validate()) {
-      // ignore: avoid_print
-      print('에러가 없습니다.');
       formKey.currentState!.save();
+
+      await GetIt.I<LocalDatabase>().createSchedule(SchedulesCompanion(
+        date: Value(widget.selectedDate),
+        startTime: Value(startTime!),
+        endTime: Value(endTime!),
+        content: Value(content!),
+        colorId: Value(selectedEmojiId!),
+      ));
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
     } else {
       // ignore: avoid_print
       print('에러가 있습니다.');
@@ -197,7 +209,7 @@ typedef EmojiIdSetter = void Function(int id);
 
 class _EmojiPicker extends StatelessWidget {
   final List<CategoryEmoji> emojis;
-  final int selectedEmojiId;
+  final int? selectedEmojiId;
   final EmojiIdSetter emojiIdSetter;
 
   const _EmojiPicker({
@@ -231,13 +243,16 @@ class _EmojiPicker extends StatelessWidget {
                 color: black,
                 width: 1.0,
               ),
+              borderRadius: BorderRadius.circular(12),
             )
           : null,
-      width: 32.0,
+      width: 30.0,
       height: 16.0,
-      child: Text(
-        style: const TextStyle(),
-        value.hexCode,
+      child: Center(
+        child: Text(
+          style: const TextStyle(),
+          value.hexCode,
+        ),
       ),
     );
   }
