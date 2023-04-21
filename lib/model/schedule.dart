@@ -18,7 +18,7 @@ class Schedules extends Table {
   //끝 시간
   IntColumn get endTime => integer()();
   //Category Emoji Table ID
-  IntColumn get colorId => integer()();
+  IntColumn get emojiId => integer()();
   //생성 날짜
   DateTimeColumn get createdAt => dateTime().clientDefault(
         () => DateTime.now(),

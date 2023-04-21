@@ -138,7 +138,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
         startTime: Value(startTime!),
         endTime: Value(endTime!),
         content: Value(content!),
-        colorId: Value(selectedEmojiId!),
+        emojiId: Value(selectedEmojiId!),
       ));
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();

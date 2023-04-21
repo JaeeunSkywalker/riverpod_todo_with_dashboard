@@ -16,7 +16,7 @@ class NonLoginMain extends StatefulWidget {
 }
 
 class _NonLoginMainState extends State<NonLoginMain> {
-  DateTime selectedDay = DateTime(
+  DateTime selectedDay = DateTime.utc(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
@@ -46,7 +46,9 @@ class _NonLoginMainState extends State<NonLoginMain> {
             const SizedBox(
               height: 8.0,
             ),
-            const _ScheduleList(),
+            _ScheduleList(
+              selectedDate: selectedDay,
+            ),
           ],
         ),
       ),
@@ -85,7 +87,9 @@ class _NonLoginMainState extends State<NonLoginMain> {
 }
 
 class _ScheduleList extends StatelessWidget {
-  const _ScheduleList();
+  final DateTime selectedDate;
+
+  const _ScheduleList({required this.selectedDate, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,19 +103,36 @@ class _ScheduleList extends StatelessWidget {
         child: StreamBuilder<List<Schedule>>(
             stream: GetIt.I<LocalDatabase>().watchSchedules(),
             builder: (context, snapshot) {
+              print('---original data---');
               print(snapshot.data);
+
+              List<Schedule> schedules = [];
+
+              if (snapshot.hasData) {
+                schedules = snapshot.data!
+                    .where((element) => element.date.toUtc() == selectedDate)
+                    .toList();
+
+                print('---filtered data---');
+                print(selectedDate);
+                print(schedules);
+              }
+
               return ListView.separated(
-                itemCount: 10,
+                itemCount: schedules.length,
                 separatorBuilder: (context, builder) {
                   return const SizedBox(
                     height: 8.0,
                   );
                 },
                 itemBuilder: (context, index) {
-                  return const ScheduleCard(
-                    startTime: 8,
-                    endTime: 14,
-                    content: '프로그래밍 공부하기',
+                  final schedule = schedules[index];
+
+                  return ScheduleCard(
+                    startTime: schedule.startTime,
+                    endTime: schedule.endTime,
+                    content: schedule.content,
+                    //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
                     color: Colors.red,
                   );
                 },
