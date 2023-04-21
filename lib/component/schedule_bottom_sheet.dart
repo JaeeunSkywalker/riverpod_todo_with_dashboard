@@ -7,9 +7,13 @@ import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
   final DateTime selectedDate;
+  final int? scheduleId;
 
-  const ScheduleBottomSheet({required this.selectedDate, Key? key})
-      : super(key: key);
+  const ScheduleBottomSheet({
+    this.scheduleId,
+    required this.selectedDate,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -34,92 +38,126 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
         //이거 적용하면 그 전에 포커스 되어 있던 곳에서 포커스를 없앨 수 있다.
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.5 + bottomInset,
-        color: white,
-        child: Padding(
-          padding: EdgeInsets.only(bottom: bottomInset),
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 8.0,
-              right: 8.0,
-              top: 16.0,
-            ),
-            child: Form(
-              //이 Form을 가지고 TextFormField 조작한다.
-              key: formKey,
-              autovalidateMode: AutovalidateMode.always,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Time(
-                    onStartSaved: (String? val) {
-                      startTime = int.parse(val!);
-                    },
-                    onEndSaved: (String? val) {
-                      endTime = int.parse(val!);
-                    },
-                  ),
-                  const SizedBox(
-                    height: 2.0,
-                  ),
-                  _Content(
-                    onSaved: (String? val) {
-                      content = val;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 6.0,
-                  ),
-                  //null check option 없는 ver.
-                  // FutureBuilder<List<CategoryEmoji>>(
-                  //   future: GetIt.I<LocalDatabase>().getCategoryEmojis(),
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.hasData &&
-                  //         selectedEmojiId == null &&
-                  //         snapshot.data!.isNotEmpty &&
-                  //         ) {
-                  //       selectedEmojiId = snapshot.data![0].id;
-                  //     }
+      child: FutureBuilder<Schedule>(
+          future: widget.scheduleId == null
+              ? null
+              : GetIt.I<LocalDatabase>().getScheduleById(widget.scheduleId!),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text('스케줄을 불러올 수 없습니다.'),
+              );
+            }
 
-                  //     // ignore: prefer_const_constructors
-                  //     return _EmojiPicker(
-                  //       emojis: snapshot.hasData ? snapshot.data! : [],
-                  //       selectedEmojiId: selectedEmojiId!,
-                  //     );
-                  //   },
-                  // ),
-                  FutureBuilder<List<CategoryEmoji>>(
-                    future: GetIt.I<LocalDatabase>().getCategoryEmojis(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && selectedEmojiId == null) {
-                        selectedEmojiId = snapshot.data![0].id;
-                      }
+            //FutureBuilder가 처음 실행됐고
+            //로딩 중일 때
+            if (snapshot.connectionState != ConnectionState.none &&
+                !snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-                      return _EmojiPicker(
-                        emojis: snapshot.data ?? [], // null 체크를 함께 수행
-                        selectedEmojiId: selectedEmojiId ?? 0,
-                        emojiIdSetter: (int id) {
-                          setState(() {
-                            selectedEmojiId = id;
-                          });
-                        },
-                      );
-                    },
-                  ),
+            //Future가 실행이 되고
+            //값이 있는데 단 한 번도 startTime이 세팅되지 않았을 때
+            //db 통해서 초기화해 준다.
+            if (snapshot.hasData && startTime == null) {
+              startTime = snapshot.data!.startTime;
+              endTime = snapshot.data!.endTime;
+              content = snapshot.data!.content;
+              selectedEmojiId = snapshot.data!.emojiId;
+            }
 
-                  const SizedBox(
-                    height: 6.0,
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.5 + bottomInset,
+              color: white,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: bottomInset),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8.0,
+                    right: 8.0,
+                    top: 16.0,
                   ),
-                  _SaveButton(
-                    onPressed: onSavePressed,
+                  child: Form(
+                    //이 Form을 가지고 TextFormField 조작한다.
+                    key: formKey,
+                    autovalidateMode: AutovalidateMode.always,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _Time(
+                          onStartSaved: (String? val) {
+                            startTime = int.parse(val!);
+                          },
+                          onEndSaved: (String? val) {
+                            endTime = int.parse(val!);
+                          },
+                          startInitialValue: startTime?.toString() ?? '',
+                          endInitialValue: endTime?.toString() ?? '',
+                        ),
+                        const SizedBox(
+                          height: 2.0,
+                        ),
+                        _Content(
+                          onSaved: (String? val) {
+                            content = val;
+                          },
+                          initialValue: content ?? '',
+                        ),
+                        const SizedBox(
+                          height: 6.0,
+                        ),
+                        //null check option 없는 ver.
+                        // FutureBuilder<List<CategoryEmoji>>(
+                        //   future: GetIt.I<LocalDatabase>().getCategoryEmojis(),
+                        //   builder: (context, snapshot) {
+                        //     if (snapshot.hasData &&
+                        //         selectedEmojiId == null &&
+                        //         snapshot.data!.isNotEmpty &&
+                        //         ) {
+                        //       selectedEmojiId = snapshot.data![0].id;
+                        //     }
+
+                        //     // ignore: prefer_const_constructors
+                        //     return _EmojiPicker(
+                        //       emojis: snapshot.hasData ? snapshot.data! : [],
+                        //       selectedEmojiId: selectedEmojiId!,
+                        //     );
+                        //   },
+                        // ),
+                        FutureBuilder<List<CategoryEmoji>>(
+                          future: GetIt.I<LocalDatabase>().getCategoryEmojis(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && selectedEmojiId == null) {
+                              selectedEmojiId = snapshot.data![0].id;
+                            }
+
+                            return _EmojiPicker(
+                              emojis: snapshot.data ?? [], // null 체크를 함께 수행
+                              selectedEmojiId: selectedEmojiId ?? 0,
+                              emojiIdSetter: (int id) {
+                                setState(() {
+                                  selectedEmojiId = id;
+                                });
+                              },
+                            );
+                          },
+                        ),
+
+                        const SizedBox(
+                          height: 6.0,
+                        ),
+                        _SaveButton(
+                          onPressed: onSavePressed,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
@@ -133,13 +171,29 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      await GetIt.I<LocalDatabase>().createSchedule(SchedulesCompanion(
-        date: Value(widget.selectedDate),
-        startTime: Value(startTime!),
-        endTime: Value(endTime!),
-        content: Value(content!),
-        emojiId: Value(selectedEmojiId!),
-      ));
+      if (widget.scheduleId == null) {
+        await GetIt.I<LocalDatabase>().createSchedule(
+          SchedulesCompanion(
+            date: Value(widget.selectedDate),
+            startTime: Value(startTime!),
+            endTime: Value(endTime!),
+            content: Value(content!),
+            emojiId: Value(selectedEmojiId!),
+          ),
+        );
+      } else {
+        await GetIt.I<LocalDatabase>().updateScheduleById(
+          widget.scheduleId!,
+          SchedulesCompanion(
+            date: Value(widget.selectedDate),
+            startTime: Value(startTime!),
+            endTime: Value(endTime!),
+            content: Value(content!),
+            emojiId: Value(selectedEmojiId!),
+          ),
+        );
+      }
+
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     } else {
@@ -152,10 +206,14 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
 class _Time extends StatelessWidget {
   final FormFieldSetter<String>? onStartSaved;
   final FormFieldSetter<String>? onEndSaved;
+  final String startInitialValue;
+  final String endInitialValue;
 
   const _Time({
     required this.onStartSaved,
     required this.onEndSaved,
+    required this.startInitialValue,
+    required this.endInitialValue,
     Key? key,
   }) : super(key: key);
   @override
@@ -167,6 +225,7 @@ class _Time extends StatelessWidget {
             label: '시작 시간',
             isTime: true,
             onSaved: onStartSaved!,
+            initialValue: startInitialValue,
           ),
         ),
         const SizedBox(
@@ -177,6 +236,7 @@ class _Time extends StatelessWidget {
             label: '마감 시간',
             isTime: true,
             onSaved: onEndSaved!,
+            initialValue: endInitialValue,
           ),
         ),
       ],
@@ -186,9 +246,11 @@ class _Time extends StatelessWidget {
 
 class _Content extends StatelessWidget {
   final FormFieldSetter<String> onSaved;
+  final String initialValue;
 
   const _Content({
     required this.onSaved,
+    required this.initialValue,
     Key? key,
   }) : super(key: key);
 
@@ -199,6 +261,7 @@ class _Content extends StatelessWidget {
         label: '내용',
         isTime: false,
         onSaved: onSaved,
+        initialValue: initialValue,
       ),
     );
   }

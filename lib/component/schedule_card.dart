@@ -5,13 +5,13 @@ class ScheduleCard extends StatelessWidget {
   final int startTime;
   final int endTime;
   final String content;
-  final Color color;
+  final String emoji;
 
   const ScheduleCard(
       {required this.startTime,
       required this.endTime,
       required this.content,
-      required this.color,
+      required this.emoji,
       super.key});
 
   @override
@@ -39,8 +39,14 @@ class ScheduleCard extends StatelessWidget {
                 content: content,
               ),
               const SizedBox(width: 16.0),
-              _Category(
-                color: color,
+              Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: _Category(
+                    emoji: emoji,
+                  ),
+                ),
               ),
             ],
           ),
@@ -91,19 +97,24 @@ class _Content extends StatelessWidget {
 }
 
 class _Category extends StatelessWidget {
-  final Color color;
+  final String emoji;
 
-  const _Category({required this.color});
+  const _Category({required this.emoji});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: color,
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
       width: 16.0,
       height: 16.0,
+      child: Text(
+        emoji,
+        style: const TextStyle(
+          fontSize: 25,
+        ),
+      ),
     );
   }
 }

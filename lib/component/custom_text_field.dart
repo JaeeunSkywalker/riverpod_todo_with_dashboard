@@ -4,6 +4,8 @@ import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
+  final String initialValue;
+
   //true -> 시간, false -> 내용
   final bool isTime;
   final FormFieldSetter<String> onSaved;
@@ -12,6 +14,7 @@ class CustomTextField extends StatelessWidget {
     required this.onSaved,
     required this.label,
     required this.isTime,
+    required this.initialValue,
     Key? key,
   }) : super(key: key);
 
@@ -64,6 +67,7 @@ class CustomTextField extends StatelessWidget {
       },
       maxLines: isTime ? 1 : null,
       expands: !isTime,
+      initialValue: initialValue,
       maxLength: (isTime == false) ? 500 : null,
       keyboardType: isTime ? TextInputType.number : TextInputType.multiline,
       inputFormatters: isTime
@@ -76,6 +80,7 @@ class CustomTextField extends StatelessWidget {
         border: InputBorder.none,
         filled: true,
         fillColor: Colors.grey[300],
+        suffixText: isTime ? '시' : null,
       ),
     );
   }

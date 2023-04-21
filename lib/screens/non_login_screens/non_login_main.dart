@@ -5,6 +5,7 @@ import 'package:riverpod_todo_with_dashboard/component/schedule_bottom_sheet.dar
 import 'package:riverpod_todo_with_dashboard/component/schedule_card.dart';
 import 'package:riverpod_todo_with_dashboard/component/today_banner.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
+import 'package:riverpod_todo_with_dashboard/model/schedule_with_emoji.dart';
 
 import '../../database/drift_database.dart';
 
@@ -41,7 +42,6 @@ class _NonLoginMainState extends State<NonLoginMain> {
             TodayBanner(
               selectedDay: selectedDay,
               focusedDay: focusedDay,
-              scheduleCount: 3,
             ),
             const SizedBox(
               height: 8.0,
@@ -100,40 +100,56 @@ class _ScheduleList extends StatelessWidget {
           right: 8.0,
           bottom: 8.0,
         ),
-        child: StreamBuilder<List<Schedule>>(
-            stream: GetIt.I<LocalDatabase>().watchSchedules(),
+        child: StreamBuilder<List<ScheduleWithEmoji>>(
+            stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
             builder: (context, snapshot) {
-              print('---original data---');
-              print(snapshot.data);
-
-              List<Schedule> schedules = [];
-
-              if (snapshot.hasData) {
-                schedules = snapshot.data!
-                    .where((element) => element.date.toUtc() == selectedDate)
-                    .toList();
-
-                print('---filtered data---');
-                print(selectedDate);
-                print(schedules);
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text('스케줄이 없습니다.'),
+                );
               }
 
               return ListView.separated(
-                itemCount: schedules.length,
+                itemCount: snapshot.data!.length,
                 separatorBuilder: (context, builder) {
                   return const SizedBox(
                     height: 8.0,
                   );
                 },
                 itemBuilder: (context, index) {
-                  final schedule = schedules[index];
+                  final scheduleWithEmoji = snapshot.data![index];
 
-                  return ScheduleCard(
-                    startTime: schedule.startTime,
-                    endTime: schedule.endTime,
-                    content: schedule.content,
-                    //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
-                    color: Colors.red,
+                  return Dismissible(
+                    key: ObjectKey(scheduleWithEmoji.schedule.id),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (DismissDirection direction) {
+                      GetIt.I<LocalDatabase>()
+                          .removeSchedule(scheduleWithEmoji.schedule.id);
+                    },
+                    child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (_) {
+                            return ScheduleBottomSheet(
+                              selectedDate: selectedDate,
+                              scheduleId: scheduleWithEmoji.schedule.id,
+                            );
+                          },
+                        );
+                      },
+                      child: ScheduleCard(
+                        startTime: scheduleWithEmoji.schedule.startTime,
+                        endTime: scheduleWithEmoji.schedule.endTime,
+                        content: scheduleWithEmoji.schedule.content,
+                        //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
+                        emoji: scheduleWithEmoji.categoryEmoji.hexCode,
+                      ),
+                    ),
                   );
                 },
               );

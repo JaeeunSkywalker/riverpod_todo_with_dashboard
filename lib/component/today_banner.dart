@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
+import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
+import 'package:riverpod_todo_with_dashboard/model/schedule_with_emoji.dart';
 
 // ignore: must_be_immutable
 class TodayBanner extends StatefulWidget {
   late DateTime? selectedDay;
   late DateTime? focusedDay;
-  final int scheduleCount;
 
   TodayBanner({
     required this.selectedDay,
     required this.focusedDay,
-    required this.scheduleCount,
     Key? key,
   }) : super(key: key);
 
@@ -60,11 +61,20 @@ class _TodayBannerState extends State<TodayBanner> {
               ),
             ),
             Expanded(
-              child: Text(
-                textAlign: TextAlign.end,
-                '${widget.scheduleCount}개',
-                style: textStyle,
-              ),
+              child: StreamBuilder<List<ScheduleWithEmoji>>(
+                  stream: GetIt.I<LocalDatabase>()
+                      .watchSchedules(widget.selectedDay!),
+                  builder: (context, snapshot) {
+                    int count = 0;
+                    if (snapshot.hasData) {
+                      count = snapshot.data!.length;
+                    }
+                    return Text(
+                      textAlign: TextAlign.end,
+                      '$count개',
+                      style: textStyle,
+                    );
+                  }),
             ),
           ],
         ),
