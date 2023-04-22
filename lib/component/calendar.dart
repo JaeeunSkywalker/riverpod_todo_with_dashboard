@@ -12,7 +12,7 @@ class Calendar extends StatelessWidget {
   final DateTime focusedDay;
   final OnDaySelected onDaySelected;
 
-  final DateTime today = DateTime.now();
+  //final DateTime today = DateTime.now();
 
   Calendar({
     required this.selectedDay,
@@ -64,9 +64,9 @@ class Calendar extends StatelessWidget {
                 fontSize: 16.0,
               ),
             ),
-            currentDay: today,
+            //currentDay: today,
             calendarStyle: CalendarStyle(
-              isTodayHighlighted: false,
+              //isTodayHighlighted: true,
               defaultDecoration: DefaultBoxDeco,
               weekendDecoration: DefaultBoxDeco,
               selectedDecoration: BoxDecoration(
@@ -85,6 +85,9 @@ class Calendar extends StatelessWidget {
               selectedTextStyle: DefaultTextStyle.copyWith(
                 color: white,
               ),
+              // todayTextStyle: DefaultTextStyle.copyWith(
+              //   color: red,
+              // ),
             ),
 
             onDaySelected: onDaySelected,
@@ -94,15 +97,27 @@ class Calendar extends StatelessWidget {
                 return false;
               }
 
-              return date.year == selectedDay!.year &&
-                      date.month == selectedDay!.month &&
-                      date.day == selectedDay!.day ||
-                  schedules
-                      .map((e) =>
-                          e.date.year == date.year &&
-                          e.date.month == date.month &&
-                          e.date.day == date.day)
-                      .contains(true);
+              if (date.year == selectedDay!.year &&
+                  date.month == selectedDay!.month &&
+                  date.day == selectedDay!.day) {
+                return true;
+              }
+
+              if (date.year == DateTime.now().year &&
+                  date.month == DateTime.now().month &&
+                  date.day == DateTime.now().day) {
+                return true;
+              }
+
+              for (var schedule in schedules) {
+                if (schedule.date.year == date.year &&
+                    schedule.date.month == date.month &&
+                    schedule.date.day == date.day) {
+                  return true;
+                }
+              }
+
+              return false;
             },
           );
         });
