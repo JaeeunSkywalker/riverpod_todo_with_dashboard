@@ -1,9 +1,13 @@
 import 'package:drift/drift.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:riverpod_todo_with_dashboard/screens/home_screens/main_screen.dart';
+
 import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
+
+import 'services/auth_service.dart';
 
 //db에 넣을 emojis
 //'🔥', 이건 아이폰 이모지라 이렇게는 안드로이드에서 사용할 수 없다, hex code로 접근해야 함!
@@ -24,6 +28,7 @@ const DEFAULT_EMOJIS = [
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await initializeDateFormatting();
 
   //db 시작!
@@ -59,7 +64,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'NotoSansKR',
       ),
-      home: const MainScreen(),
+      home: AuthService().handleAuthState(),
     );
   }
 }

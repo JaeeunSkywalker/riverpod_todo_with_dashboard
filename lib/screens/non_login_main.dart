@@ -7,7 +7,7 @@ import 'package:riverpod_todo_with_dashboard/component/today_banner.dart';
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
 import 'package:riverpod_todo_with_dashboard/model/schedule_with_emoji.dart';
 
-import '../../database/drift_database.dart';
+import '../database/drift_database.dart';
 
 class NonLoginMain extends StatefulWidget {
   const NonLoginMain({super.key});

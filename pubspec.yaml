@@ -35,11 +35,13 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   table_calendar: ^3.0.9
-  intl: ^0.18.1
   drift: ^2.7.0
   sqlite3_flutter_libs: ^0.5.0
   path_provider: ^2.0.0
   get_it: ^7.2.0
+  google_sign_in: ^6.1.0
+  firebase_core: ^2.10.0
+  firebase_auth: ^4.4.2
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +58,7 @@ dev_dependencies:
 
 dependency_overrides:
   path: ^1.8.3
+  intl: ^0.18.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

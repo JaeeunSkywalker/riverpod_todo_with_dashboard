@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 
 import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
-import 'package:riverpod_todo_with_dashboard/screens/non_login_screens/non_login_main.dart';
+import 'package:riverpod_todo_with_dashboard/services/auth_service.dart';
 
-class HomeBottomScreen extends StatefulWidget {
-  const HomeBottomScreen({super.key});
+import '../non_login_main.dart';
+
+class ButtonsScreen extends StatefulWidget {
+  const ButtonsScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeBottomScreen> createState() => _HomeBottomScreenState();
+  State<ButtonsScreen> createState() => _ButtonsScreenState();
 }
 
-class _HomeBottomScreenState extends State<HomeBottomScreen> {
+class _ButtonsScreenState extends State<ButtonsScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         _Button(
-          //TODO 1번: 구글 로그인 구현
-          buttonMessage: '구글 로그인 들어갈 자리',
-          onPressed: () {},
+          buttonMessage: '구글 로그인',
+          onPressed: () {
+            AuthService().signInWithGoogle();
+          },
         ),
         const SizedBox(
           height: 20.0,
@@ -26,21 +29,23 @@ class _HomeBottomScreenState extends State<HomeBottomScreen> {
         _Button(
           buttonMessage: '회원가입(및 로그인) 없이 사용하기',
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const NonLoginMain(),
-            ));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NonLoginMain(),
+              ),
+            );
           },
-        )
+        ),
       ],
     );
   }
 }
 
-// ignore: must_be_immutable
 class _Button extends StatelessWidget {
-  String buttonMessage = '';
-  VoidCallback onPressed;
-  _Button({
+  final String buttonMessage;
+  final VoidCallback onPressed;
+
+  const _Button({
     Key? key,
     required this.buttonMessage,
     required this.onPressed,
@@ -53,10 +58,11 @@ class _Button extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            border: Border.all(
-          color: Colors.grey,
-          width: 1.5,
-        )),
+          border: Border.all(
+            color: Colors.grey,
+            width: 1.5,
+          ),
+        ),
         height: 70,
         child: Text(
           buttonMessage,
