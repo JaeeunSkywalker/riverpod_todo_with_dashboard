@@ -1,14 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:riverpod_todo_with_dashboard/component/on_day_selected_page.dart';
 
 import '../component/calendar.dart';
-import '../component/schedule_bottom_sheet.dart';
-import '../component/schedule_card.dart';
-import '../component/today_banner.dart';
 import '../consts/colors.dart';
-import '../database/drift_database.dart';
-import '../model/schedule_with_emoji.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -39,91 +34,63 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: SafeArea(
         child: Scaffold(
-            floatingActionButton: renderFloatingActionButton(),
             body: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      style: const TextStyle(
-                        fontFamily: 'SingleDay',
-                        fontSize: 22.0,
-                      ),
-                      displayName != null
-                          ? '$displayName님, 오늘도 화이팅!'
-                          : '오늘도 화이팅!!!',
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.13,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    style: const TextStyle(
+                      fontFamily: 'SingleDay',
+                      fontSize: 22.0,
                     ),
-                    MaterialButton(
-                      padding: const EdgeInsets.all(5),
-                      color: Colors.indigo[200],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      child: const Text(
-                        'LOG OUT',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      onPressed: () {
-                        AuthService().signOut();
-                      },
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    //월에 따라 이모지 다르게 표현하기
-                    //'🎆☃️🏫🌷👨‍👩‍👧‍👦🍱🎰🏖️🎑🎃☕🎄',
-                    Text(
-                      style: TextStyle(
-                        fontSize: 80.0,
-                      ),
-                      '🥇',
-                    ),
-                  ],
-                ),
-                //이 밑으로 캘린더
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.56,
-                  child: Calendar(
-                    selectedDay: selectedDay,
-                    focusedDay: focusedDay,
-                    onDaySelected: OnDaySelected,
+                    displayName != null
+                        ? '$displayName님, 오늘도 화이팅!'
+                        : '오늘도 화이팅!!!',
                   ),
-                ),
-                TodayBanner(
+                  MaterialButton(
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.indigo[200],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    child: const Text(
+                      '로그아웃',
+                      style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    ),
+                    onPressed: () {
+                      AuthService().signOut();
+                    },
+                  )
+                ],
+              ),
+            ),
+            const Text(
+              style: TextStyle(
+                fontSize: 80.0,
+              ),
+              '🥇',
+            ),
+            //이 밑으로 캘린더
+            Expanded(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.56,
+                child: Calendar(
                   selectedDay: selectedDay,
                   focusedDay: focusedDay,
-                  onGoToToday: goToToday, // 콜백 함수 전달
+                  onDaySelected: OnDaySelected,
                 ),
-                const SizedBox(
-                  height: 8.0,
-                ),
-                _ScheduleList(
-                  selectedDate: selectedDay,
-                ),
-              ],
-            )),
-      ),
-    );
-  }
-
-  FloatingActionButton renderFloatingActionButton() {
-    return FloatingActionButton(
-      backgroundColor: CalendarPrimaryColor,
-      onPressed: () {
-        showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          builder: (_) {
-            return ScheduleBottomSheet(
-              selectedDate: selectedDay,
-            );
-          },
-        );
-      },
-      child: const Icon(
-        Icons.add,
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.07,
+              child: TodayBanner(
+                onGoToToday: goToToday, // 콜백 함수 전달
+              ),
+            ),
+          ],
+        )),
       ),
     );
   }
@@ -134,6 +101,13 @@ class _LoginScreenState extends State<LoginScreen> {
       () {
         this.selectedDay = selectedDay;
         this.focusedDay = selectedDay;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OnDaySelectedPage(),
+          ),
+        );
       },
     );
   }
@@ -173,74 +147,58 @@ class ExitAlertDialog extends StatelessWidget {
   }
 }
 
-class _ScheduleList extends StatelessWidget {
-  final DateTime selectedDate;
+// ignore: must_be_immutable
+class TodayBanner extends StatefulWidget {
+  final void Function() onGoToToday; // 콜백 함수 타입 정의
 
-  const _ScheduleList({required this.selectedDate, Key? key}) : super(key: key);
+  const TodayBanner({
+    required this.onGoToToday, // 콜백 함수 매개변수 추가
+    Key? key,
+  }) : super(key: key);
 
   @override
+  State<TodayBanner> createState() => _TodayBannerState();
+}
+
+class _TodayBannerState extends State<TodayBanner> {
+  @override
   Widget build(BuildContext context) {
-    return Expanded(
+    const textStyle = TextStyle(
+      fontWeight: FontWeight.w600,
+      color: white,
+    );
+
+    return Container(
+      height: 50,
+      color: CalendarPrimaryColor,
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 8.0,
-          right: 8.0,
-          bottom: 8.0,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 8.0,
         ),
-        child: StreamBuilder<List<ScheduleWithEmoji>>(
-            stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasData && snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text('스케줄이 없습니다.'),
-                );
-              }
-
-              return ListView.separated(
-                itemCount: snapshot.data!.length,
-                separatorBuilder: (context, builder) {
-                  return const SizedBox(
-                    height: 8.0,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  final scheduleWithEmoji = snapshot.data![index];
-
-                  return Dismissible(
-                    key: ObjectKey(scheduleWithEmoji.schedule.id),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (DismissDirection direction) {
-                      GetIt.I<LocalDatabase>()
-                          .removeSchedule(scheduleWithEmoji.schedule.id);
-                    },
-                    child: GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (_) {
-                            return ScheduleBottomSheet(
-                              selectedDate: selectedDate,
-                              scheduleId: scheduleWithEmoji.schedule.id,
-                            );
-                          },
-                        );
-                      },
-                      child: ScheduleCard(
-                        startTime: scheduleWithEmoji.schedule.startTime,
-                        endTime: scheduleWithEmoji.schedule.endTime,
-                        content: scheduleWithEmoji.schedule.content,
-                        //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
-                        emoji: scheduleWithEmoji.categoryEmoji.hexCode,
-                      ),
-                    ),
-                  );
-                },
-              );
-            }),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {}, // 콜백 함수 호출
+              child: const Expanded(
+                child: Text(
+                  '활동 내역 리포트 보기',
+                  style: textStyle,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: widget.onGoToToday, // 콜백 함수 호출
+              child: const Expanded(
+                child: Text(
+                  '오늘로 돌아가기',
+                  style: textStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
