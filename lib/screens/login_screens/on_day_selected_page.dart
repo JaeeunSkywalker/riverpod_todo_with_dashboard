@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// ignore: depend_on_referenced_packages, unused_import
+import 'package:intl/intl.dart';
 
 import '../../consts/colors.dart';
 
@@ -61,6 +65,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
     double screenWidth = MediaQuery.of(context).size.width * 0.8;
     double screenHeight = MediaQuery.of(context).size.height * 0.8;
     return await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return GestureDetector(
@@ -179,16 +184,76 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      //할 일은 todo로 저장됨
-                      //시간은 selectedTime으로 저장됨
-                      //내용은 contentController에 저장됨
-                      //할 일과 시간이 null이 아니면(내용은 null 됨)
-                      //저장 버튼을 눌렀을 때 구글 이메일 주소로 account 구분해서
-                      //앞의 스크린으로 받아 온 날짜를 doc 제목으로 해서 파이어스토어에 저장한다.
-                      //클릭한 달력의 날짜는 selectedDay에 저장됨
+                    onTap: () async {
+                      // 파이어스토어에 데이터 저장하기
+                      if (titleController.text != '' && selectedTime != '') {
+                        await FirebaseFirestore.instance
+                            .collection('users') // users 컬렉션
+                            .doc(FirebaseAuth
+                                .instance.currentUser!.uid) // 현재 사용자 uid로 문서 식별
+                            .collection('dates') // 날짜로 분류한 컬렉션
+                            .doc(widget.selectedDay.toString())
+                            .collection('indexs')
+                            .doc(selectedTime) // 날짜를 문자열로 변환하여 문서 식별
+                            .set({
+                          'title': titleController.text,
+                          'selectedTime': selectedTime.toString(),
+                          'content': contentController.text,
+                        });
+                        titleController.text = '';
+                        selectedTime = '';
+                        contentController.text = '';
+                        startHour = 0;
+                        endHour = 1;
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context).pop();
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('오류'),
+                              content:
+                                  const Text('할 일과 시간을 입력해 주시면 저장할 수 있습니다.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
+                  InkWell(
+                    child: const Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text(
+                        '취소',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    onTap: () async {
+                      titleController.text = '';
+                      selectedTime = '';
+                      contentController.text = '';
+                      startHour = 0;
+                      endHour = 1;
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    },
+                  )
                 ],
               );
             },
