@@ -70,7 +70,7 @@ class Calendar extends StatelessWidget {
               defaultDecoration: DefaultBoxDeco,
               weekendDecoration: DefaultBoxDeco,
               selectedDecoration: BoxDecoration(
-                color: Colors.indigo[200],
+                color: indigo200,
                 borderRadius: BorderRadius.circular(6.0),
                 border: Border.all(
                   color: black,

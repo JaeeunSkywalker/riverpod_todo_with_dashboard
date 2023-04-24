@@ -58,7 +58,7 @@ class _NonLoginMainState extends State<NonLoginMain> {
 
   FloatingActionButton renderFloatingActionButton() {
     return FloatingActionButton(
-      backgroundColor: CalendarPrimaryColor,
+      backgroundColor: indigo200,
       onPressed: () {
         showModalBottomSheet(
           isScrollControlled: true,

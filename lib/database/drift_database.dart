@@ -7,6 +7,7 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_todo_with_dashboard/model/category_emoji.dart';
+import 'package:riverpod_todo_with_dashboard/model/category_month_emoji.dart';
 import 'package:riverpod_todo_with_dashboard/model/schedule.dart';
 import 'package:riverpod_todo_with_dashboard/model/schedule_with_emoji.dart';
 
@@ -20,6 +21,7 @@ part 'drift_database.g.dart';
   tables: [
     Schedules,
     CategoryEmojis,
+    CategoryMonthEmojis,
   ],
 )
 
@@ -39,9 +41,15 @@ class LocalDatabase extends _$LocalDatabase {
   Future<int> createCategoryEmojis(CategoryEmojisCompanion data) =>
       into(categoryEmojis).insert(data);
 
+  Future<int> createCategoryMonthEmojis(CategoryMonthEmojisCompanion data) =>
+      into(categoryMonthEmojis).insert(data);
+
   //select는 2가지 방법으로 가능, string으로 순차적으로 받을 수도 있고 future로 한꺼번에 받을 수도 있다.
   Future<List<CategoryEmoji>> getCategoryEmojis() =>
       select(categoryEmojis).get();
+
+  Future<List<CategoryMonthEmoji>> getCategoryMonthEmojis() =>
+      select(categoryMonthEmojis).get();
 
   Future<int> updateScheduleById(int id, SchedulesCompanion data) =>
       (update(schedules)..where((tbl) => tbl.id.equals(id))).write(data);
@@ -98,7 +106,6 @@ class LocalDatabase extends _$LocalDatabase {
 //실제 db 파일을 보조기억장치 어디에 생성할 건지 여기서 설정
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    //TODO 3번: 웹에서 어떻게 운용할지 생각할 것
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(
       dbFolder.path,

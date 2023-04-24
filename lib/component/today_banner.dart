@@ -30,7 +30,7 @@ class _TodayBannerState extends State<TodayBanner> {
     );
 
     return Container(
-      color: CalendarPrimaryColor,
+      color: indigo200,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,

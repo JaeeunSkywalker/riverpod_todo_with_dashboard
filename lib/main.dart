@@ -26,6 +26,22 @@ const DEFAULT_EMOJIS = [
   '🛏',
 ];
 
+// ignore: constant_identifier_names
+const MONTH_EMOJIS = [
+  '🎆',
+  '☃️',
+  '🏫',
+  '🌷',
+  '👨‍👩‍👧‍👦',
+  '🌲',
+  '🏖️',
+  '🍹',
+  '🎑',
+  '🎃',
+  '☕',
+  '🎄',
+];
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -39,6 +55,7 @@ void main() async {
   GetIt.I.registerSingleton<LocalDatabase>(database);
 
   final emojis = await database.getCategoryEmojis();
+  final monthEmojis = await database.getCategoryMonthEmojis();
 
   if (emojis.isEmpty) {
     for (String emoji in DEFAULT_EMOJIS) {
@@ -50,7 +67,15 @@ void main() async {
     }
   }
 
-  //print(DEFAULT_EMOJIS);
+  if (monthEmojis.isEmpty) {
+    for (String emoji in MONTH_EMOJIS) {
+      await database.createCategoryMonthEmojis(
+        CategoryMonthEmojisCompanion(
+          hexCode: Value(emoji),
+        ),
+      );
+    }
+  }
 
   runApp(const MyApp());
 }

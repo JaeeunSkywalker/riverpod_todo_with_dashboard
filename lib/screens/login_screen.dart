@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:riverpod_todo_with_dashboard/component/on_day_selected_page.dart';
+import 'package:get_it/get_it.dart';
+import 'package:riverpod_todo_with_dashboard/screens/login_screens/on_day_selected_page.dart';
+import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
 import '../component/calendar.dart';
 import '../consts/colors.dart';
@@ -36,8 +38,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Scaffold(
             body: Column(
           children: [
+            const SizedBox(
+              height: 10.0,
+            ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.13,
+              height: MediaQuery.of(context).size.height * 0.1,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -51,8 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         : '오늘도 화이팅!!!',
                   ),
                   MaterialButton(
-                    padding: const EdgeInsets.all(8.0),
-                    color: Colors.indigo[200],
+                    padding: const EdgeInsets.all(7.0),
+                    color: indigo200,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                     child: const Text(
@@ -66,16 +71,36 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            const Text(
-              style: TextStyle(
-                fontSize: 80.0,
+            const SizedBox(
+              height: 21.0,
+            ),
+            SizedBox(
+              height: 95.0,
+              child: FutureBuilder<List<CategoryMonthEmoji>>(
+                future: GetIt.I<LocalDatabase>().getCategoryMonthEmojis(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final selectedMonthEmojiIndex = focusedDay.month - 1;
+                    final selectedMonthEmoji =
+                        snapshot.data![selectedMonthEmojiIndex];
+                    return Text(
+                      selectedMonthEmoji.hexCode,
+                      style: const TextStyle(
+                        fontSize: 70,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
               ),
-              '🥇',
             ),
             //이 밑으로 캘린더
             Expanded(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.56,
+                height: MediaQuery.of(context).size.height * 0.58,
                 child: Calendar(
                   selectedDay: selectedDay,
                   focusedDay: focusedDay,
@@ -84,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.07,
+              height: MediaQuery.of(context).size.height * 0.08,
               child: TodayBanner(
                 onGoToToday: goToToday, // 콜백 함수 전달
               ),
@@ -105,7 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const OnDaySelectedPage(),
+            builder: (context) => OnDaySelectedPage(
+              selectedDay: selectedDay,
+            ),
           ),
         );
       },
@@ -169,8 +196,8 @@ class _TodayBannerState extends State<TodayBanner> {
     );
 
     return Container(
-      height: 50,
-      color: CalendarPrimaryColor,
+      height: 100,
+      color: indigo200,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16.0,
