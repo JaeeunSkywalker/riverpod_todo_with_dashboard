@@ -534,14 +534,190 @@ class CategoryEmojisCompanion extends UpdateCompanion<CategoryEmoji> {
   }
 }
 
+class $CategoryMonthEmojisTable extends CategoryMonthEmojis
+    with TableInfo<$CategoryMonthEmojisTable, CategoryMonthEmoji> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoryMonthEmojisTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _hexCodeMeta =
+      const VerificationMeta('hexCode');
+  @override
+  late final GeneratedColumn<String> hexCode = GeneratedColumn<String>(
+      'hex_code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, hexCode];
+  @override
+  String get aliasedName => _alias ?? 'category_month_emojis';
+  @override
+  String get actualTableName => 'category_month_emojis';
+  @override
+  VerificationContext validateIntegrity(Insertable<CategoryMonthEmoji> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('hex_code')) {
+      context.handle(_hexCodeMeta,
+          hexCode.isAcceptableOrUnknown(data['hex_code']!, _hexCodeMeta));
+    } else if (isInserting) {
+      context.missing(_hexCodeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CategoryMonthEmoji map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CategoryMonthEmoji(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      hexCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}hex_code'])!,
+    );
+  }
+
+  @override
+  $CategoryMonthEmojisTable createAlias(String alias) {
+    return $CategoryMonthEmojisTable(attachedDatabase, alias);
+  }
+}
+
+class CategoryMonthEmoji extends DataClass
+    implements Insertable<CategoryMonthEmoji> {
+  final int id;
+  final String hexCode;
+  const CategoryMonthEmoji({required this.id, required this.hexCode});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['hex_code'] = Variable<String>(hexCode);
+    return map;
+  }
+
+  CategoryMonthEmojisCompanion toCompanion(bool nullToAbsent) {
+    return CategoryMonthEmojisCompanion(
+      id: Value(id),
+      hexCode: Value(hexCode),
+    );
+  }
+
+  factory CategoryMonthEmoji.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CategoryMonthEmoji(
+      id: serializer.fromJson<int>(json['id']),
+      hexCode: serializer.fromJson<String>(json['hexCode']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'hexCode': serializer.toJson<String>(hexCode),
+    };
+  }
+
+  CategoryMonthEmoji copyWith({int? id, String? hexCode}) => CategoryMonthEmoji(
+        id: id ?? this.id,
+        hexCode: hexCode ?? this.hexCode,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CategoryMonthEmoji(')
+          ..write('id: $id, ')
+          ..write('hexCode: $hexCode')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, hexCode);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CategoryMonthEmoji &&
+          other.id == this.id &&
+          other.hexCode == this.hexCode);
+}
+
+class CategoryMonthEmojisCompanion extends UpdateCompanion<CategoryMonthEmoji> {
+  final Value<int> id;
+  final Value<String> hexCode;
+  const CategoryMonthEmojisCompanion({
+    this.id = const Value.absent(),
+    this.hexCode = const Value.absent(),
+  });
+  CategoryMonthEmojisCompanion.insert({
+    this.id = const Value.absent(),
+    required String hexCode,
+  }) : hexCode = Value(hexCode);
+  static Insertable<CategoryMonthEmoji> custom({
+    Expression<int>? id,
+    Expression<String>? hexCode,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hexCode != null) 'hex_code': hexCode,
+    });
+  }
+
+  CategoryMonthEmojisCompanion copyWith(
+      {Value<int>? id, Value<String>? hexCode}) {
+    return CategoryMonthEmojisCompanion(
+      id: id ?? this.id,
+      hexCode: hexCode ?? this.hexCode,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (hexCode.present) {
+      map['hex_code'] = Variable<String>(hexCode.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoryMonthEmojisCompanion(')
+          ..write('id: $id, ')
+          ..write('hexCode: $hexCode')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   late final $SchedulesTable schedules = $SchedulesTable(this);
   late final $CategoryEmojisTable categoryEmojis = $CategoryEmojisTable(this);
+  late final $CategoryMonthEmojisTable categoryMonthEmojis =
+      $CategoryMonthEmojisTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [schedules, categoryEmojis];
+      [schedules, categoryEmojis, categoryMonthEmojis];
 }

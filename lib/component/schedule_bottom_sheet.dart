@@ -333,7 +333,7 @@ class _SaveButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: CalendarPrimaryColor,
+              backgroundColor: indigo200,
             ),
             child: const Text('저장'),
           ),

@@ -28,7 +28,7 @@ class CustomTextField extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: CalendarPrimaryColor,
+              color: indigo200,
               fontWeight: FontWeight.w600,
             ),
           ),
