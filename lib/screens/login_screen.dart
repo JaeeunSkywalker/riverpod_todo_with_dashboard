@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:riverpod_todo_with_dashboard/screens/login_screens/on_day_selected_page.dart';
 import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
-import '../component/calendar.dart';
+import '../component/online_calendar.dart';
 import '../consts/colors.dart';
 import '../services/auth_service.dart';
 

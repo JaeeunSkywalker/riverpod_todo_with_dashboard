@@ -31,6 +31,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
   );
 
   bool isDone = false;
+  bool isEditMode = false;
 
   //파이어스토어에서 데이터를 가져와 보자!!!
   Future<List<String>> fetchDataFromFirebase() async {
@@ -47,6 +48,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
           await db.collection('users').doc(uid).collection('dates').get();
 
       if (datesSnapshot.docs.isEmpty) {
+        // ignore: avoid_print
         print('datesSnapshot.docs is empty');
       } else {
         //각 날짜별 문서에 접근 중
@@ -165,7 +167,254 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                   )
                                   .toList();
                               return GestureDetector(
-                                onTap: () {},
+                                onLongPress: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return Dialog(
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  2,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    isEditMode
+                                                        ? TextFormField(
+                                                            maxLength: 25,
+                                                            controller:
+                                                                titleController,
+                                                            cursorColor:
+                                                                indigo200,
+                                                            validator: (value) {
+                                                              return value!
+                                                                      .isNotEmpty
+                                                                  ? null
+                                                                  : '';
+                                                            },
+                                                            decoration:
+                                                                InputDecoration(
+                                                              hintText: "할 일",
+                                                              focusedBorder:
+                                                                  UnderlineInputBorder(
+                                                                borderSide:
+                                                                    BorderSide(
+                                                                  width: 2,
+                                                                  color:
+                                                                      indigo200!,
+                                                                ),
+                                                              ),
+                                                              enabledBorder:
+                                                                  UnderlineInputBorder(
+                                                                borderSide:
+                                                                    BorderSide(
+                                                                  color:
+                                                                      indigo200!,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : Text(
+                                                            '할 일:\n${filteredData[index].split(':').last.split(',').elementAt(0).trim()}',
+                                                            style: textStyle
+                                                                .copyWith(
+                                                                    fontSize:
+                                                                        22.0),
+                                                          ),
+                                                    isEditMode
+                                                        ? Row(
+                                                            children: [
+                                                              Expanded(
+                                                                child:
+                                                                    TextField(
+                                                                  decoration:
+                                                                      InputDecoration(
+                                                                    focusedBorder:
+                                                                        UnderlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                        color:
+                                                                            indigo200!,
+                                                                      ),
+                                                                    ),
+                                                                    enabledBorder:
+                                                                        UnderlineInputBorder(
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                        color:
+                                                                            indigo200!,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  readOnly:
+                                                                      true,
+                                                                  controller:
+                                                                      TextEditingController(
+                                                                          text:
+                                                                              selectedTime),
+                                                                ),
+                                                              ),
+                                                              ElevatedButton(
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      indigo200,
+                                                                ),
+                                                                onPressed: () {
+                                                                  timePickerDialog()
+                                                                      .then(
+                                                                          (value) {
+                                                                    if (value !=
+                                                                        null) {
+                                                                      setState(
+                                                                          () {
+                                                                        selectedTime =
+                                                                            value;
+                                                                      });
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child: const Icon(
+                                                                    Icons
+                                                                        .access_time_outlined),
+                                                              )
+                                                            ],
+                                                          )
+                                                        : Text(
+                                                            '시간:\n${filteredData[index].split(':').last.split(',').elementAt(1).trim()}',
+                                                            style: textStyle
+                                                                .copyWith(
+                                                                    fontSize:
+                                                                        22.0),
+                                                          ),
+                                                    const SizedBox(
+                                                      height: 10.0,
+                                                    ),
+                                                    isEditMode
+                                                        ? Expanded(
+                                                            child:
+                                                                TextFormField(
+                                                              controller:
+                                                                  contentController,
+                                                              cursorColor:
+                                                                  indigo200,
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .multiline,
+                                                              expands: true,
+                                                              maxLines: null,
+                                                              minLines: null,
+                                                              maxLength: 100,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                focusedBorder:
+                                                                    OutlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    width: 2,
+                                                                    color:
+                                                                        indigo200!,
+                                                                  ),
+                                                                ),
+                                                                hintText:
+                                                                    "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있습니다.",
+                                                                enabledBorder:
+                                                                    OutlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                    color:
+                                                                        indigo200!,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          )
+                                                        : Expanded(
+                                                            child: Text(
+                                                              '내용:\n${filteredData[index].split(':').last.split(',').elementAt(2).trim()}',
+                                                              style: textStyle
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          22.0),
+                                                            ),
+                                                          ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'users')
+                                                                .doc(FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser!
+                                                                    .uid)
+                                                                .collection(
+                                                                    'dates')
+                                                                .doc(
+                                                                  widget
+                                                                      .selectedDay!
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10),
+                                                                )
+                                                                .collection(
+                                                                    'indexes')
+                                                                .doc(
+                                                                  filteredData[
+                                                                          index]
+                                                                      .split(
+                                                                          ':')
+                                                                      .last
+                                                                      .split(
+                                                                          ',')
+                                                                      .elementAt(
+                                                                          1)
+                                                                      .trim(),
+                                                                )
+                                                                .delete();
+                                                            //selectedTime 테스트
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            setState(() {});
+                                                          },
+                                                          child: Text(
+                                                            '삭제',
+                                                            style: textStyle
+                                                                .copyWith(
+                                                                    fontSize:
+                                                                        20.0),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
                                 child: ListTile(
                                   title: Center(
                                     child: Column(
@@ -407,7 +656,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                 ),
                               ),
                               hintText:
-                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있어요.",
+                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있습니다.",
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: indigo200!,
@@ -434,6 +683,22 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                     onTap: () async {
                       //파이어스토어에 데이터 저장하기
                       if (titleController.text != '' && selectedTime != '') {
+                        // await FirebaseFirestore.instance
+                        //     .collection('users') // users 컬렉션
+                        //     .doc(FirebaseAuth
+                        //         .instance.currentUser!.uid) // 현재 사용자 uid로 문서 식별
+                        //     .collection('dates')
+                        //     // 날짜로 분류한 컬렉션
+                        //     .doc(
+                        //       widget.selectedDay!.toString().substring(0, 10),
+                        //     )
+                        //     .set({"dummy": "dummy"});
+
+                        await FirebaseFirestore.instance
+                            .collection('users') // users 컬렉션
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .set({"dummy": "dummy"}); // 현재 사용자 uid로 문서 식별
+
                         await FirebaseFirestore.instance
                             .collection('users') // users 컬렉션
                             .doc(FirebaseAuth
