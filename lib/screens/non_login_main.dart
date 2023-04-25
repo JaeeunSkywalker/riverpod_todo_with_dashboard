@@ -117,7 +117,13 @@ class _ScheduleList extends StatelessWidget {
             stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      indigo200!,
+                    ),
+                  ),
+                );
               }
               if (snapshot.hasData && snapshot.data!.isEmpty) {
                 return const Center(
