@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// ignore: depend_on_referenced_packages, unused_import
+import 'package:intl/intl.dart';
 
 import '../../consts/colors.dart';
 
@@ -22,21 +26,265 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
+  final textStyle = const TextStyle(
+    fontFamily: 'SingleDay',
+  );
+
+  bool isDone = false;
+
+  //파이어스토어에서 데이터를 가져와 보자!!!
+  Future<List<String>> fetchDataFromFirebase() async {
+    final List<String> data = [];
+
+    try {
+      //db instance 만들고
+      final db = FirebaseFirestore.instance;
+
+      //uid 받고
+      final String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      final QuerySnapshot datesSnapshot =
+          await db.collection('users').doc(uid).collection('dates').get();
+
+      if (datesSnapshot.docs.isEmpty) {
+        print('datesSnapshot.docs is empty');
+      } else {
+        //각 날짜별 문서에 접근 중
+        for (final dateDoc in datesSnapshot.docs) {
+          // 각각의 dateDoc은 dates 컬렉션 아래의 한 문서를 나타냅니다.
+          final String date = dateDoc.id;
+
+          // 해당 날짜 문서에 속한 indexes 서브콜렉션 가져오기
+          final QuerySnapshot indexesSnapshot = await db
+              .collection('users')
+              .doc(uid)
+              .collection('dates')
+              .doc(date)
+              .collection('indexes')
+              .get();
+
+          for (final indexDoc in indexesSnapshot.docs) {
+            // 각각의 indexDoc은 해당 날짜의 indexes 서브콜렉션에 속한 한 문서를 나타냅니다.
+            final String index = indexDoc.id;
+            // index 문서에서 필요한 데이터 가져오기
+            final String title = indexDoc.get('title');
+            final String selectedTime = indexDoc.get('selectedTime');
+            final String content = indexDoc.get('content');
+            // 가져온 데이터를 사용하여 필요한 작업 수행
+            // 가져온 데이터를 data 리스트에 추가
+
+            data.add(
+              '$date / $index: $title, $selectedTime, $content',
+            );
+          }
+        }
+      }
+      return data;
+    } catch (e) {
+      // 에러 처리
+      // ignore: avoid_print
+      print('Error fetching data: $e');
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         floatingActionButton: renderFloatingActionButton(),
         body: Column(
           children: [
-            Center(
+            const SizedBox(
+              height: 10.0,
+            ),
+            Align(
+              alignment: Alignment.topCenter,
               child: Text(
-                style: const TextStyle(
+                style: textStyle.copyWith(
                   fontSize: 30.0,
-                  fontFamily: 'SingleDay',
                 ),
                 widget.selectedDay!.toString().substring(0, 10),
               ),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            FutureBuilder<List<String>>(
+              future: fetchDataFromFirebase(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // 데이터를 가져오는 중일 때는 로딩 중인 상태를 보여줌
+                  return CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      indigo200!,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  // 데이터 가져오기에 실패한 경우
+                  return Text(
+                    '데이터를 가져오지 못 했습니다.',
+                    style: textStyle.copyWith(
+                      fontSize: 20.0,
+                    ),
+                  );
+                } else if (snapshot.data!.isEmpty || snapshot.data == null) {
+                  // 가져온 데이터가 없는 경우
+                  return Text(
+                    '스케줄이 없습니다',
+                    style: textStyle.copyWith(
+                      fontSize: 20.0,
+                    ),
+                  );
+                } else {
+                  // 가져온 데이터가 있는 경우
+                  return Expanded(
+                    child: snapshot.data!
+                            .where(
+                              (element) => element.contains(
+                                widget.selectedDay.toString().substring(0, 10),
+                              ),
+                            )
+                            .isEmpty
+                        ? Text(
+                            '스케줄이 없습니다',
+                            style: textStyle.copyWith(fontSize: 22.0),
+                          )
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final filteredData = snapshot.data!
+                                  .where(
+                                    (element) => element.contains(
+                                      widget.selectedDay
+                                          .toString()
+                                          .substring(0, 10),
+                                    ),
+                                  )
+                                  .toList();
+                              return GestureDetector(
+                                onTap: () {},
+                                child: ListTile(
+                                  title: Center(
+                                    child: Column(
+                                      children: [
+                                        Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              height: 100.0,
+                                              width: 220.0,
+                                              decoration: const BoxDecoration(
+                                                color: white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey,
+                                                    blurRadius: 10.0,
+                                                    spreadRadius: 1.0,
+                                                    offset: Offset(
+                                                      5.0,
+                                                      5.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                                borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                  bottomRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    filteredData[index]
+                                                        .split(':')
+                                                        .last
+                                                        .split(',')
+                                                        .elementAt(0),
+                                                    style: textStyle.copyWith(
+                                                        fontSize: 22.0),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                  Text(
+                                                    filteredData[index]
+                                                        .split(':')
+                                                        .last
+                                                        .split(',')
+                                                        .elementAt(1),
+                                                    style: textStyle.copyWith(
+                                                        fontSize: 22.0),
+                                                  ),
+                                                  Text(
+                                                    filteredData[index]
+                                                        .split(':')
+                                                        .last
+                                                        .split(',')
+                                                        .elementAt(2),
+                                                    style: textStyle.copyWith(
+                                                        fontSize: 22.0),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: -10.0,
+                                              bottom: 10.0,
+                                              child: Container(
+                                                width: 40.0,
+                                                height: 160.0,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: indigo200,
+                                                ),
+                                                child: Center(
+                                                  child: StatefulBuilder(
+                                                    builder:
+                                                        (context, setState) {
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            //여기서 todo 완료/미완 체크함
+                                                            isDone = !isDone;
+                                                          });
+                                                        },
+                                                        child: Icon(
+                                                          Icons.check,
+                                                          color: isDone
+                                                              ? black
+                                                              : white,
+                                                          size: 30.0,
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 18.0,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -57,10 +305,10 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
   }
 
   Future<void> showInformationDialog(BuildContext context) async {
-    //0.7, 0.6
     double screenWidth = MediaQuery.of(context).size.width * 0.8;
     double screenHeight = MediaQuery.of(context).size.height * 0.8;
     return await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return GestureDetector(
@@ -71,15 +319,16 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
           child: StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                insetPadding: const EdgeInsets.all(20),
+                insetPadding: const EdgeInsets.all(0),
                 content: SizedBox(
                   width: screenWidth * 0.8,
-                  height: screenHeight * 0.4,
+                  height: screenHeight * 0.45,
                   child: Form(
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         TextFormField(
+                          maxLength: 25,
                           controller: titleController,
                           cursorColor: indigo200,
                           validator: (value) {
@@ -138,6 +387,9 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                             )
                           ],
                         ),
+                        const SizedBox(
+                          height: 10.0,
+                        ),
                         Expanded(
                           child: TextFormField(
                             controller: contentController,
@@ -145,8 +397,8 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                             keyboardType: TextInputType.multiline,
                             expands: true,
                             maxLines: null,
-                            maxLength: 100,
                             minLines: null,
+                            maxLength: 100,
                             decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
@@ -155,7 +407,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                 ),
                               ),
                               hintText:
-                                  "내용을 적어 주세요.\n끝에 '#키워드'를 입력하면\n리포트에서 통계로 볼 수 있어요.",
+                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있어요.",
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: indigo200!,
@@ -171,7 +423,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                 actions: <Widget>[
                   InkWell(
                     child: const Padding(
-                      padding: EdgeInsets.all(20.0),
+                      padding: EdgeInsets.all(8.0),
                       child: Text(
                         '저장',
                         style: TextStyle(
@@ -179,16 +431,94 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      //할 일은 todo로 저장됨
-                      //시간은 selectedTime으로 저장됨
-                      //내용은 contentController에 저장됨
-                      //할 일과 시간이 null이 아니면(내용은 null 됨)
-                      //저장 버튼을 눌렀을 때 구글 이메일 주소로 account 구분해서
-                      //앞의 스크린으로 받아 온 날짜를 doc 제목으로 해서 파이어스토어에 저장한다.
-                      //클릭한 달력의 날짜는 selectedDay에 저장됨
+                    onTap: () async {
+                      //파이어스토어에 데이터 저장하기
+                      if (titleController.text != '' && selectedTime != '') {
+                        await FirebaseFirestore.instance
+                            .collection('users') // users 컬렉션
+                            .doc(FirebaseAuth
+                                .instance.currentUser!.uid) // 현재 사용자 uid로 문서 식별
+                            .collection('dates')
+                            // 날짜로 분류한 컬렉션
+                            .doc(
+                              widget.selectedDay!.toString().substring(0, 10),
+                            )
+                            .set({"dummy": "dummy"});
+
+                        await FirebaseFirestore.instance
+                            .collection('users') // users 컬렉션
+                            .doc(FirebaseAuth
+                                .instance.currentUser!.uid) // 현재 사용자 uid로 문서 식별
+                            .collection('dates')
+                            // 날짜로 분류한 컬렉션
+                            .doc(
+                              widget.selectedDay!.toString().substring(0, 10),
+                            )
+                            .collection('indexes')
+                            .doc(selectedTime) // 시간을 문자열로 변환하여 문서 식별
+                            .set({
+                          'title': titleController.text,
+                          'selectedTime': selectedTime,
+                          'content': contentController.text,
+                        });
+
+                        titleController.text = '';
+                        selectedTime = '';
+                        contentController.text = '';
+                        startHour = 0;
+                        endHour = 1;
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context).pop();
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('오류'),
+                              content:
+                                  const Text('할 일과 시간을 입력해 주시면 저장할 수 있습니다.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    '확인',
+                                    style: TextStyle(
+                                      color: black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
+                  const SizedBox(
+                    width: 10.0,
+                  ),
+                  InkWell(
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        '취소',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    onTap: () async {
+                      titleController.text = '';
+                      selectedTime = '';
+                      contentController.text = '';
+                      startHour = 0;
+                      endHour = 1;
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    },
+                  )
                 ],
               );
             },
@@ -228,7 +558,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                       24,
                       (int index) => DropdownMenuItem(
                         value: index,
-                        child: Text('$index시'),
+                        child: Text('${index.toString().padLeft(2, '0')}시'),
                       ),
                     ),
                   );
@@ -249,7 +579,8 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                       24,
                       (int index) => DropdownMenuItem(
                         value: index + 1,
-                        child: Text('${index + 1}시'),
+                        child:
+                            Text('${(index + 1).toString().padLeft(2, '0')}시'),
                       ),
                     ),
                   );
@@ -268,7 +599,10 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
               onPressed: () {
                 // 확인 버튼 클릭 시 동작
                 if (endHour - startHour > 0) {
-                  selectedTime = '$startHour시 ~ $endHour시';
+                  //selectedTime = '$startHour시 ~ $endHour시';
+                  selectedTime =
+                      '${startHour.toString().padLeft(2, '0')}시 ~ ${endHour.toString().padLeft(2, '0')}시';
+
                   // 시간 값을 TextFormField 위젯에 반영
 
                   Navigator.of(context).pop(selectedTime);

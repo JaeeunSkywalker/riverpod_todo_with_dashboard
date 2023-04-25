@@ -92,7 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    return const CircularProgressIndicator();
+                    return CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        indigo200!,
+                      ),
+                    );
                   }
                 },
               ),

@@ -53,8 +53,12 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
             //로딩 중일 때
             if (snapshot.connectionState != ConnectionState.none &&
                 !snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    indigo200!,
+                  ),
+                ),
               );
             }
 
