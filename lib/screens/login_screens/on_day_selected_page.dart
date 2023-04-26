@@ -30,7 +30,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
     fontFamily: 'SingleDay',
   );
 
-  bool isDone = false;
+  bool done = false;
 
   //파이어스토어에서 데이터를 가져와 보자!!!
   Future<List<String>> fetchDataFromFirebase() async {
@@ -47,6 +47,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
           await db.collection('users').doc(uid).collection('dates').get();
 
       if (datesSnapshot.docs.isEmpty) {
+        // ignore: avoid_print
         print('datesSnapshot.docs is empty');
       } else {
         //각 날짜별 문서에 접근 중
@@ -70,15 +71,18 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
             final String title = indexDoc.get('title');
             final String selectedTime = indexDoc.get('selectedTime');
             final String content = indexDoc.get('content');
+            final bool isDone = indexDoc.get('isDone');
+            done = isDone;
             // 가져온 데이터를 사용하여 필요한 작업 수행
             // 가져온 데이터를 data 리스트에 추가
 
             data.add(
-              '$date / $index: $title, $selectedTime, $content',
+              '$date / $index: $title, $selectedTime, $content, $isDone',
             );
           }
         }
       }
+
       return data;
     } catch (e) {
       // 에러 처리
@@ -139,33 +143,144 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                   );
                 } else {
                   // 가져온 데이터가 있는 경우
+                  final filteredData = snapshot.data!
+                      .where(
+                        (element) => element.contains(
+                          widget.selectedDay.toString().substring(0, 10),
+                        ),
+                      )
+                      .toList();
+
                   return Expanded(
-                    child: snapshot.data!
-                            .where(
-                              (element) => element.contains(
-                                widget.selectedDay.toString().substring(0, 10),
-                              ),
-                            )
-                            .isEmpty
+                    child: filteredData.isEmpty
                         ? Text(
                             '스케줄이 없습니다',
                             style: textStyle.copyWith(fontSize: 22.0),
                           )
                         : ListView.builder(
                             physics: const BouncingScrollPhysics(),
-                            itemCount: snapshot.data!.length,
+                            itemCount: filteredData.length,
                             itemBuilder: (context, index) {
-                              final filteredData = snapshot.data!
-                                  .where(
-                                    (element) => element.contains(
-                                      widget.selectedDay
-                                          .toString()
-                                          .substring(0, 10),
-                                    ),
-                                  )
-                                  .toList();
+                              List<String> checkboxValues = [];
+
+                              checkboxValues = List.generate(
+                                filteredData.length,
+                                (i) => filteredData[i]
+                                    .split(':')
+                                    .last
+                                    .split(',')
+                                    .elementAt(3)
+                                    .toString(),
+                              );
+
                               return GestureDetector(
-                                onTap: () {},
+                                onLongPress: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return Dialog(
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  2,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(20.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '할 일:\n${filteredData[index].split(':').last.split(',').elementAt(0).trim()}',
+                                                      style: textStyle.copyWith(
+                                                          fontSize: 22.0),
+                                                    ),
+                                                    Text(
+                                                      '시간:\n${filteredData[index].split(':').last.split(',').elementAt(1).trim()}',
+                                                      style: textStyle.copyWith(
+                                                          fontSize: 22.0),
+                                                    ),
+                                                    Expanded(
+                                                      child: Text(
+                                                        '내용:\n${filteredData[index].split(':').last.split(',').elementAt(2).trim()}',
+                                                        style:
+                                                            textStyle.copyWith(
+                                                                fontSize: 22.0),
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'users')
+                                                                .doc(FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser!
+                                                                    .uid)
+                                                                .collection(
+                                                                    'dates')
+                                                                .doc(
+                                                                  widget
+                                                                      .selectedDay!
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0,
+                                                                          10),
+                                                                )
+                                                                .collection(
+                                                                    'indexes')
+                                                                .doc(
+                                                                  filteredData[
+                                                                          index]
+                                                                      .split(
+                                                                          ':')
+                                                                      .last
+                                                                      .split(
+                                                                          ',')
+                                                                      .elementAt(
+                                                                          1)
+                                                                      .trim(),
+                                                                )
+                                                                .delete();
+                                                            //selectedTime 테스트
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                            setState(() {});
+                                                          },
+                                                          child: Text(
+                                                            '삭제',
+                                                            style: textStyle
+                                                                .copyWith(
+                                                                    fontSize:
+                                                                        20.0),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
                                 child: ListTile(
                                   title: Center(
                                     child: Column(
@@ -251,19 +366,95 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                     builder:
                                                         (context, setState) {
                                                       return GestureDetector(
-                                                        onTap: () {
+                                                        onTap: () async {
                                                           setState(() {
-                                                            //여기서 todo 완료/미완 체크함
-                                                            isDone = !isDone;
+                                                            if (checkboxValues[
+                                                                    index] ==
+                                                                'true') {
+                                                              checkboxValues[
+                                                                      index] =
+                                                                  'false';
+                                                            } else {
+                                                              checkboxValues[
+                                                                      index] =
+                                                                  'true';
+                                                            }
                                                           });
+                                                          checkboxValues[index] ==
+                                                                  'true'
+                                                              ? await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'users')
+                                                                  .doc(FirebaseAuth
+                                                                      .instance
+                                                                      .currentUser!
+                                                                      .uid)
+                                                                  .collection(
+                                                                      'dates')
+                                                                  .doc(widget
+                                                                      .selectedDay!
+                                                                      .toString()
+                                                                      .substring(
+                                                                          0, 10))
+                                                                  .collection(
+                                                                      'indexes')
+                                                                  .doc(filteredData[index]
+                                                                      .split(
+                                                                          ':')
+                                                                      .last
+                                                                      .split(
+                                                                          ',')
+                                                                      .elementAt(
+                                                                          1)
+                                                                      .trim())
+                                                                  .update(
+                                                                      {"isDone": true})
+                                                              : await FirebaseFirestore
+                                                                  .instance
+                                                                  .collection('users')
+                                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                                  .collection('dates')
+                                                                  .doc(widget.selectedDay!.toString().substring(0, 10))
+                                                                  .collection('indexes')
+                                                                  .doc(filteredData[index].split(':').last.split(',').elementAt(1).trim())
+                                                                  .update({"isDone": false});
                                                         },
-                                                        child: Icon(
-                                                          Icons.check,
-                                                          color: isDone
-                                                              ? black
-                                                              : white,
-                                                          size: 30.0,
-                                                        ),
+                                                        child: FutureBuilder<
+                                                                List<String>>(
+                                                            future:
+                                                                fetchDataFromFirebase(),
+                                                            builder: (context,
+                                                                snapshot) {
+                                                              if (snapshot
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .waiting) {
+                                                                return Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    valueColor:
+                                                                        AlwaysStoppedAnimation<
+                                                                            Color>(
+                                                                      indigo200!,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                              return Icon(
+                                                                Icons.check,
+                                                                color: filteredData[index]
+                                                                            .split(':')
+                                                                            .last
+                                                                            .split(',')
+                                                                            .elementAt(3)
+                                                                            .trim() ==
+                                                                        'true'
+                                                                    ? black
+                                                                    : white,
+                                                                size: 30.0,
+                                                              );
+                                                            }),
                                                       );
                                                     },
                                                   ),
@@ -407,7 +598,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                 ),
                               ),
                               hintText:
-                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있어요.",
+                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있습니다.",
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: indigo200!,
@@ -434,6 +625,22 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                     onTap: () async {
                       //파이어스토어에 데이터 저장하기
                       if (titleController.text != '' && selectedTime != '') {
+                        // await FirebaseFirestore.instance
+                        //     .collection('users') // users 컬렉션
+                        //     .doc(FirebaseAuth
+                        //         .instance.currentUser!.uid) // 현재 사용자 uid로 문서 식별
+                        //     .collection('dates')
+                        //     // 날짜로 분류한 컬렉션
+                        //     .doc(
+                        //       widget.selectedDay!.toString().substring(0, 10),
+                        //     )
+                        //     .set({"dummy": "dummy"});
+
+                        await FirebaseFirestore.instance
+                            .collection('users') // users 컬렉션
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .set({"dummy": "dummy"}); // 현재 사용자 uid로 문서 식별
+
                         await FirebaseFirestore.instance
                             .collection('users') // users 컬렉션
                             .doc(FirebaseAuth
@@ -460,6 +667,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                           'title': titleController.text,
                           'selectedTime': selectedTime,
                           'content': contentController.text,
+                          'isDone': false,
                         });
 
                         titleController.text = '';

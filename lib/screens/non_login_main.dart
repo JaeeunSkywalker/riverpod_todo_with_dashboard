@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:riverpod_todo_with_dashboard/component/calendar.dart';
+import 'package:riverpod_todo_with_dashboard/component/offline_calendar.dart';
 import 'package:riverpod_todo_with_dashboard/component/schedule_bottom_sheet.dart';
 import 'package:riverpod_todo_with_dashboard/component/schedule_card.dart';
 import 'package:riverpod_todo_with_dashboard/component/today_banner.dart';

@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:riverpod_todo_with_dashboard/screens/login_screens/analytics_screen.dart';
 import 'package:riverpod_todo_with_dashboard/screens/login_screens/on_day_selected_page.dart';
 import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
-import '../component/calendar.dart';
+import '../component/online_calendar.dart';
 import '../consts/colors.dart';
 import '../services/auth_service.dart';
 
@@ -211,7 +212,14 @@ class _TodayBannerState extends State<TodayBanner> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              onTap: () {}, // 콜백 함수 호출
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AnalyticsScreen(),
+                  ),
+                );
+              }, // 콜백 함수 호출
               child: const Expanded(
                 child: Text(
                   '활동 내역 리포트 보기',
