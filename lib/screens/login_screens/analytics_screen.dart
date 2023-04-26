@@ -4,6 +4,8 @@ import 'package:riverpod_todo_with_dashboard/consts/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
+import 'package:riverpod_todo_with_dashboard/services/firebase_services.dart';
+
 const messagesToYou = [
   '오늘도 1day 1success 하셨나요?',
   '하루에 하나만 해도\n1년이면 365개 성공!',
@@ -22,19 +24,32 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  //서버에서 데이터 받아 와서 저장
-  final double janTodos = 0;
-  final double febTodos = 0;
-  final double marTodos = 0;
-  final double aprTodos = 0;
-  final double mayTodos = 0;
-  final double junTodos = 0;
-  final double julTodos = 0;
-  final double augTodos = 0;
-  final double sepTodos = 0;
-  final double octTodos = 0;
-  final double novTodos = 0;
-  final double decTodos = 0;
+  // 1월부터 12월까지의 월 문자열 리스트
+  static const _monthList = [
+    '01',
+    '02',
+    '03',
+    '04',
+    '05',
+    '06',
+    '07',
+    '08',
+    '09',
+    '10',
+    '11',
+    '12'
+  ];
+  // 월별 isdone true일 수 저장용 리스트
+  List<int> isDoneTrueDaysByMonth = [];
+
+  Future<List<int>> _getIsDoneTrueDaysFromAllMonths() async {
+    // 1월부터 12월까지의 isdone true일 수 가져오기
+    isDoneTrueDaysByMonth = await Future.wait(List.generate(
+        12,
+        (index) => const FirebaseServices()
+            .getIsDoneTrueDaysFromMonth(_monthList[index])));
+    return isDoneTrueDaysByMonth;
+  }
 
   final textStyle = const TextStyle(
     color: black,
@@ -65,7 +80,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                '올 해의 통계만 볼 수 있습니다.',
+                '올해의 통계만 볼 수 있습니다.',
                 style: textStyle.copyWith(
                   fontSize: 25.0,
                 ),
@@ -79,113 +94,213 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 mainAxisSpacing: 16.0,
                 children: [
                   Card(
-                    child: BarChart(
-                      BarChartData(
-                        barGroups: [
-                          BarChartGroupData(
-                              x: 1, barRods: [makeRodData(janTodos)]),
-                          BarChartGroupData(
-                              x: 2, barRods: [makeRodData(febTodos)]),
-                          BarChartGroupData(
-                              x: 3, barRods: [makeRodData(marTodos)]),
-                          BarChartGroupData(
-                              x: 4, barRods: [makeRodData(aprTodos)]),
-                          BarChartGroupData(
-                              x: 5, barRods: [makeRodData(mayTodos)]),
-                          BarChartGroupData(
-                              x: 6, barRods: [makeRodData(junTodos)]),
-                          BarChartGroupData(
-                              x: 7, barRods: [makeRodData(julTodos)]),
-                          BarChartGroupData(
-                              x: 8, barRods: [makeRodData(octTodos)]),
-                          BarChartGroupData(
-                              x: 9, barRods: [makeRodData(sepTodos)]),
-                          BarChartGroupData(
-                              x: 10, barRods: [makeRodData(octTodos)]),
-                          BarChartGroupData(
-                              x: 11, barRods: [makeRodData(novTodos)]),
-                          BarChartGroupData(
-                              x: 12, barRods: [makeRodData(decTodos)]),
-                        ],
-                        titlesData: FlTitlesData(
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: false,
+                    child: FutureBuilder<List<int>>(
+                      future: _getIsDoneTrueDaysFromAllMonths(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              indigo200!,
+                            ),
+                          );
+                        }
+                        return BarChart(
+                          BarChartData(
+                            barGroups: [
+                              BarChartGroupData(x: 1, barRods: [
+                                makeRodData(snapshot.data![0].toDouble())
+                              ]),
+                              BarChartGroupData(x: 2, barRods: [
+                                makeRodData(snapshot.data![1].toDouble())
+                              ]),
+                              BarChartGroupData(x: 3, barRods: [
+                                makeRodData(snapshot.data![2].toDouble())
+                              ]),
+                              BarChartGroupData(x: 4, barRods: [
+                                makeRodData(snapshot.data![3].toDouble())
+                              ]),
+                              BarChartGroupData(x: 5, barRods: [
+                                makeRodData(snapshot.data![4].toDouble())
+                              ]),
+                              BarChartGroupData(x: 6, barRods: [
+                                makeRodData(snapshot.data![5].toDouble())
+                              ]),
+                              BarChartGroupData(x: 7, barRods: [
+                                makeRodData(snapshot.data![6].toDouble())
+                              ]),
+                              BarChartGroupData(x: 8, barRods: [
+                                makeRodData(snapshot.data![7].toDouble())
+                              ]),
+                              BarChartGroupData(x: 9, barRods: [
+                                makeRodData(snapshot.data![8].toDouble())
+                              ]),
+                              BarChartGroupData(x: 10, barRods: [
+                                makeRodData(snapshot.data![9].toDouble())
+                              ]),
+                              BarChartGroupData(x: 11, barRods: [
+                                makeRodData(snapshot.data![10].toDouble())
+                              ]),
+                              BarChartGroupData(x: 12, barRods: [
+                                makeRodData(snapshot.data![11].toDouble())
+                              ]),
+                            ],
+                            titlesData: FlTitlesData(
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: false,
+                                ),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    switch (value.toInt()) {
+                                      case 1:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![0].toString(),
+                                                style: textStyle));
+                                      case 2:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![1].toString(),
+                                                style: textStyle));
+                                      case 3:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![2].toString(),
+                                                style: textStyle));
+                                      case 4:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![3].toString(),
+                                                style: textStyle));
+                                      case 5:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![4].toString(),
+                                                style: textStyle));
+                                      case 6:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![5].toString(),
+                                                style: textStyle));
+                                      case 7:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![6].toString(),
+                                                style: textStyle));
+                                      case 8:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![7].toString(),
+                                                style: textStyle));
+                                      case 9:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![8].toString(),
+                                                style: textStyle));
+                                      case 10:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![9].toString(),
+                                                style: textStyle));
+                                      case 11:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![10].toString(),
+                                                style: textStyle));
+                                      case 12:
+                                        return Center(
+                                            child: Text(
+                                                snapshot.data![11].toString(),
+                                                style: textStyle));
+                                      default:
+                                        throw StateError('Not supported');
+                                    }
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  reservedSize: 40,
+                                  showTitles: true,
+                                  interval: 7,
+                                ),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  reservedSize: 40,
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) {
+                                    switch (value.toInt()) {
+                                      case 1:
+                                        return Center(
+                                            child:
+                                                Text('Jan', style: textStyle));
+                                      case 2:
+                                        return Center(
+                                            child:
+                                                Text('Feb', style: textStyle));
+                                      case 3:
+                                        return Center(
+                                            child:
+                                                Text('Mar', style: textStyle));
+                                      case 4:
+                                        return Center(
+                                            child:
+                                                Text('Apr', style: textStyle));
+                                      case 5:
+                                        return Center(
+                                            child:
+                                                Text('May', style: textStyle));
+                                      case 6:
+                                        return Center(
+                                            child:
+                                                Text('Jun', style: textStyle));
+                                      case 7:
+                                        return Center(
+                                            child:
+                                                Text('Jul', style: textStyle));
+                                      case 8:
+                                        return Center(
+                                            child:
+                                                Text('Aug', style: textStyle));
+                                      case 9:
+                                        return Center(
+                                            child:
+                                                Text('Sep', style: textStyle));
+                                      case 10:
+                                        return Center(
+                                            child:
+                                                Text('Oct', style: textStyle));
+                                      case 11:
+                                        return Center(
+                                            child:
+                                                Text('Nov', style: textStyle));
+                                      case 12:
+                                        return Center(
+                                            child:
+                                                Text('Dec', style: textStyle));
+                                      default:
+                                        throw StateError('Not supported');
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            //하루에 1개, 1년에 365개!
+                            maxY: 31,
+                            gridData: FlGridData(
+                              show: false,
+                            ),
+                            borderData: FlBorderData(
+                              show: false,
                             ),
                           ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                return const Text('');
-                              },
-                            ),
-                          ),
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              reservedSize: 40,
-                              showTitles: true,
-                              interval: 31,
-                            ),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              reservedSize: 40,
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                switch (value.toInt()) {
-                                  case 1:
-                                    return Center(
-                                        child: Text('Jan', style: textStyle));
-                                  case 2:
-                                    return Center(
-                                        child: Text('Feb', style: textStyle));
-                                  case 3:
-                                    return Center(
-                                        child: Text('Mar', style: textStyle));
-                                  case 4:
-                                    return Center(
-                                        child: Text('Apr', style: textStyle));
-                                  case 5:
-                                    return Center(
-                                        child: Text('May', style: textStyle));
-                                  case 6:
-                                    return Center(
-                                        child: Text('Jun', style: textStyle));
-                                  case 7:
-                                    return Center(
-                                        child: Text('Jul', style: textStyle));
-                                  case 8:
-                                    return Center(
-                                        child: Text('Aug', style: textStyle));
-                                  case 9:
-                                    return Center(
-                                        child: Text('Sep', style: textStyle));
-                                  case 10:
-                                    return Center(
-                                        child: Text('Oct', style: textStyle));
-                                  case 11:
-                                    return Center(
-                                        child: Text('Nov', style: textStyle));
-                                  case 12:
-                                    return Center(
-                                        child: Text('Dec', style: textStyle));
-                                  default:
-                                    throw StateError('Not supported');
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        //하루에 1개, 1년에 365개!
-                        maxY: 365,
-                        gridData: FlGridData(
-                          show: false,
-                        ),
-                        borderData: FlBorderData(
-                          show: false,
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     //const Card(),
                   ),
@@ -213,7 +328,7 @@ BarChartRodData makeRodData(double y) {
     backDrawRodData: BackgroundBarChartRodData(
       show: true,
       color: const Color(0xFFFCFCFC),
-      fromY: 365,
+      fromY: 31,
     ),
   );
 }
