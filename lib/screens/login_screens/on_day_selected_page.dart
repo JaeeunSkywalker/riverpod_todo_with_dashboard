@@ -82,6 +82,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
           }
         }
       }
+
       return data;
     } catch (e) {
       // 에러 처리
@@ -142,49 +143,36 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                   );
                 } else {
                   // 가져온 데이터가 있는 경우
+                  final filteredData = snapshot.data!
+                      .where(
+                        (element) => element.contains(
+                          widget.selectedDay.toString().substring(0, 10),
+                        ),
+                      )
+                      .toList();
+
                   return Expanded(
-                    child: snapshot.data!
-                            .where(
-                              (element) => element.contains(
-                                widget.selectedDay.toString().substring(0, 10),
-                              ),
-                            )
-                            .isEmpty
+                    child: filteredData.isEmpty
                         ? Text(
                             '스케줄이 없습니다',
                             style: textStyle.copyWith(fontSize: 22.0),
                           )
                         : ListView.builder(
                             physics: const BouncingScrollPhysics(),
-                            itemCount: snapshot.data!.length,
+                            itemCount: filteredData.length,
                             itemBuilder: (context, index) {
-                              final filteredData = snapshot.data!
-                                  .where(
-                                    (element) => element.contains(
-                                      widget.selectedDay
-                                          .toString()
-                                          .substring(0, 10),
-                                    ),
-                                  )
-                                  .toList();
-                              List<String> checkboxValues = List.generate(
-                                  filteredData.length,
-                                  (_) => filteredData[index]
-                                      .split(':')
-                                      .last
-                                      .split(',')
-                                      .elementAt(3)
-                                      .toString());
-                              // print('checkboxValues');
-                              // print(checkboxValues);
+                              List<String> checkboxValues = [];
 
-                              print('checkboxValues[index]');
-                              print(checkboxValues[index]);
+                              checkboxValues = List.generate(
+                                filteredData.length,
+                                (i) => filteredData[i]
+                                    .split(':')
+                                    .last
+                                    .split(',')
+                                    .elementAt(3)
+                                    .toString(),
+                              );
 
-                              // ignore: avoid_print
-                              print('filtered');
-                              // ignore: avoid_print
-                              print(filteredData);
                               return GestureDetector(
                                 onLongPress: () {
                                   showDialog(
@@ -442,24 +430,20 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                                       .connectionState ==
                                                                   ConnectionState
                                                                       .waiting) {
-                                                                return const Center(
+                                                                return Center(
                                                                   child:
-                                                                      CircularProgressIndicator(),
+                                                                      CircularProgressIndicator(
+                                                                    valueColor:
+                                                                        AlwaysStoppedAnimation<
+                                                                            Color>(
+                                                                      indigo200!,
+                                                                    ),
+                                                                  ),
                                                                 );
                                                               }
-                                                              print(
-                                                                  '아이콘 자리에서 받아 온 snapshot');
-                                                              print(snapshot
-                                                                  .data![index]
-                                                                  .split(':')
-                                                                  .last
-                                                                  .split(',')
-                                                                  .elementAt(3)
-                                                                  .trim());
                                                               return Icon(
                                                                 Icons.check,
-                                                                color: snapshot
-                                                                            .data![index]
+                                                                color: filteredData[index]
                                                                             .split(':')
                                                                             .last
                                                                             .split(',')
