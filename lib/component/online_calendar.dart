@@ -49,7 +49,7 @@ class Calendar extends StatelessWidget {
 
       if (datesSnapshot.docs.isEmpty) {
         // ignore: avoid_print
-        print('datesSnapshot.docs is empty');
+        // print('datesSnapshot.docs is empty');
       } else {
         //각 날짜별 문서에 접근 중
         for (final dateDoc in datesSnapshot.docs) {
@@ -81,10 +81,7 @@ class Calendar extends StatelessWidget {
       }
       return data;
     } catch (e) {
-      // 에러 처리
-      // ignore: avoid_print
-      print('Error fetching data: $e');
-      return [];
+      return data;
     }
   }
 
@@ -101,18 +98,6 @@ class Calendar extends StatelessWidget {
                 ),
               ),
             );
-            // List<Schedule> schedules = snapshot.data ?? [];
-            // ignore: avoid_print
-            // print('---기본---');
-            // ignore: avoid_print
-            // print(schedules); // null일 때 빈 리스트로 초기화
-            // List<Schedule> filteredSchedules = schedules
-            //     .where((element) => element.date.month == selectedDay!.month)
-            //     .toList();
-            // ignore: avoid_print
-            // print('---필터링 후---');
-            // ignore: avoid_print
-            // print(filteredSchedules); // null일 때 빈 리스트로 초기화
           }
           return TableCalendar(
             //locale: 'ko_KR',
