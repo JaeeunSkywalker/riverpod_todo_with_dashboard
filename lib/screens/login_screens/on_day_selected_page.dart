@@ -30,8 +30,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
     fontFamily: 'SingleDay',
   );
 
-  bool isDone = false;
-  bool isEditMode = false;
+  bool done = false;
 
   //파이어스토어에서 데이터를 가져와 보자!!!
   Future<List<String>> fetchDataFromFirebase() async {
@@ -72,11 +71,13 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
             final String title = indexDoc.get('title');
             final String selectedTime = indexDoc.get('selectedTime');
             final String content = indexDoc.get('content');
+            final bool isDone = indexDoc.get('isDone');
+            done = isDone;
             // 가져온 데이터를 사용하여 필요한 작업 수행
             // 가져온 데이터를 data 리스트에 추가
 
             data.add(
-              '$date / $index: $title, $selectedTime, $content',
+              '$date / $index: $title, $selectedTime, $content, $isDone',
             );
           }
         }
@@ -166,6 +167,24 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                     ),
                                   )
                                   .toList();
+                              List<String> checkboxValues = List.generate(
+                                  filteredData.length,
+                                  (_) => filteredData[index]
+                                      .split(':')
+                                      .last
+                                      .split(',')
+                                      .elementAt(3)
+                                      .toString());
+                              // print('checkboxValues');
+                              // print(checkboxValues);
+
+                              print('checkboxValues[index]');
+                              print(checkboxValues[index]);
+
+                              // ignore: avoid_print
+                              print('filtered');
+                              // ignore: avoid_print
+                              print(filteredData);
                               return GestureDetector(
                                 onLongPress: () {
                                   showDialog(
@@ -360,7 +379,21 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                         (context, setState) {
                                                       return GestureDetector(
                                                         onTap: () async {
-                                                          isDone
+                                                          setState(() {
+                                                            if (checkboxValues[
+                                                                    index] ==
+                                                                'true') {
+                                                              checkboxValues[
+                                                                      index] =
+                                                                  'false';
+                                                            } else {
+                                                              checkboxValues[
+                                                                      index] =
+                                                                  'true';
+                                                            }
+                                                          });
+                                                          checkboxValues[index] ==
+                                                                  'true'
                                                               ? await FirebaseFirestore
                                                                   .instance
                                                                   .collection(
@@ -388,49 +421,56 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                                           1)
                                                                       .trim())
                                                                   .update(
-                                                                      {"isDone": false})
+                                                                      {"isDone": true})
                                                               : await FirebaseFirestore
                                                                   .instance
-                                                                  .collection(
-                                                                      'users')
-                                                                  .doc(FirebaseAuth
-                                                                      .instance
-                                                                      .currentUser!
-                                                                      .uid)
-                                                                  .collection(
-                                                                      'dates')
-                                                                  .doc(widget
-                                                                      .selectedDay!
-                                                                      .toString()
-                                                                      .substring(
-                                                                          0, 10))
-                                                                  .collection(
-                                                                      'indexes')
-                                                                  .doc(
-                                                                    filteredData[
-                                                                            index]
-                                                                        .split(
-                                                                            ':')
-                                                                        .last
-                                                                        .split(
-                                                                            ',')
-                                                                        .elementAt(
-                                                                            1)
-                                                                        .trim(),
-                                                                  )
-                                                                  .update({"isDone": true});
-                                                          setState(() {
-                                                            // 여기서 todo 완료/미완 체크함
-                                                            isDone = !isDone;
-                                                          });
+                                                                  .collection('users')
+                                                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                                  .collection('dates')
+                                                                  .doc(widget.selectedDay!.toString().substring(0, 10))
+                                                                  .collection('indexes')
+                                                                  .doc(filteredData[index].split(':').last.split(',').elementAt(1).trim())
+                                                                  .update({"isDone": false});
                                                         },
-                                                        child: Icon(
-                                                          Icons.check,
-                                                          color: isDone
-                                                              ? black
-                                                              : white,
-                                                          size: 30.0,
-                                                        ),
+                                                        child: FutureBuilder<
+                                                                List<String>>(
+                                                            future:
+                                                                fetchDataFromFirebase(),
+                                                            builder: (context,
+                                                                snapshot) {
+                                                              if (snapshot
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .waiting) {
+                                                                return const Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(),
+                                                                );
+                                                              }
+                                                              print(
+                                                                  '아이콘 자리에서 받아 온 snapshot');
+                                                              print(snapshot
+                                                                  .data![index]
+                                                                  .split(':')
+                                                                  .last
+                                                                  .split(',')
+                                                                  .elementAt(3)
+                                                                  .trim());
+                                                              return Icon(
+                                                                Icons.check,
+                                                                color: snapshot
+                                                                            .data![index]
+                                                                            .split(':')
+                                                                            .last
+                                                                            .split(',')
+                                                                            .elementAt(3)
+                                                                            .trim() ==
+                                                                        'true'
+                                                                    ? black
+                                                                    : white,
+                                                                size: 30.0,
+                                                              );
+                                                            }),
                                                       );
                                                     },
                                                   ),

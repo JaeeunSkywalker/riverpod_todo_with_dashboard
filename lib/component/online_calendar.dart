@@ -94,7 +94,7 @@ class Calendar extends StatelessWidget {
         future: fetchDataFromFirebaseForCalendar(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
             // List<Schedule> schedules = snapshot.data ?? [];
