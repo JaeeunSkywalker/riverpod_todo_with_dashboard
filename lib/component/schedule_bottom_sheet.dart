@@ -200,9 +200,6 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
 
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
-    } else {
-      // ignore: avoid_print
-      print('에러가 있습니다.');
     }
   }
 }

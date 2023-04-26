@@ -48,7 +48,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
 
       if (datesSnapshot.docs.isEmpty) {
         // ignore: avoid_print
-        print('datesSnapshot.docs is empty');
+        // print('datesSnapshot.docs is empty');
       } else {
         //각 날짜별 문서에 접근 중
         for (final dateDoc in datesSnapshot.docs) {
@@ -85,9 +85,6 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
 
       return data;
     } catch (e) {
-      // 에러 처리
-      // ignore: avoid_print
-      print('Error fetching data: $e');
       return [];
     }
   }
@@ -598,7 +595,7 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                 ),
                               ),
                               hintText:
-                                  "내용을 입력해 주세요.\n'#키워드'를 입력하면\n리포트에서 통계로 볼 수 있습니다.",
+                                  "#공부 #운동 #식단 #업무 #취미\n#명상 중 하나를 입력하면\n통계에 반영됩니다.",
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: indigo200!,

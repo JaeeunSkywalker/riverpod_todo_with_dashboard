@@ -39,17 +39,6 @@ class Calendar extends StatelessWidget {
         future: GetIt.I<LocalDatabase>().getSchedules(),
         builder: (context, snapshot) {
           List<Schedule> schedules = snapshot.data ?? [];
-          // ignore: avoid_print
-          // print('---기본---');
-          // ignore: avoid_print
-          // print(schedules); // null일 때 빈 리스트로 초기화
-          // List<Schedule> filteredSchedules = schedules
-          //     .where((element) => element.date.month == selectedDay!.month)
-          //     .toList();
-          // ignore: avoid_print
-          // print('---필터링 후---');
-          // ignore: avoid_print
-          // print(filteredSchedules); // null일 때 빈 리스트로 초기화
 
           return TableCalendar(
             //locale: 'ko_KR',
