@@ -314,9 +314,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             future:
                                 const FirebaseServices().getKeywordsFromYear(),
                             builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    indigo200!,
+                                  ),
+                                );
+                              }
                               return Row(
                                 children: [
-                                  snapshot.hasData == false
+                                  snapshot.hasData == false ||
+                                          snapshot.data == null
                                       ? Expanded(
                                           child: Center(
                                             child: Text(
@@ -365,7 +374,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(
@@ -384,7 +393,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                             .toDouble(),
                                                         title: ((snapshot
                                                                                 .data?[
-                                                                            '운동'] ??
+                                                                            '공부'] ??
                                                                         0) +
                                                                     (snapshot.data?[
                                                                             '운동'] ??
@@ -403,7 +412,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['운동'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(
@@ -423,7 +432,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                             .toDouble(),
                                                         title: ((snapshot
                                                                                 .data?[
-                                                                            '식단'] ??
+                                                                            '공부'] ??
                                                                         0) +
                                                                     (snapshot.data?[
                                                                             '운동'] ??
@@ -442,7 +451,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['식단'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(
@@ -462,7 +471,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                             .toDouble(),
                                                         title: ((snapshot
                                                                                 .data?[
-                                                                            '업무'] ??
+                                                                            '공부'] ??
                                                                         0) +
                                                                     (snapshot.data?[
                                                                             '운동'] ??
@@ -481,7 +490,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['업무'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(
@@ -501,7 +510,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                             .toDouble(),
                                                         title: ((snapshot
                                                                                 .data?[
-                                                                            '취미'] ??
+                                                                            '공부'] ??
                                                                         0) +
                                                                     (snapshot.data?[
                                                                             '운동'] ??
@@ -520,7 +529,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['취미'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(
@@ -539,7 +548,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                             .toDouble(),
                                                         title: ((snapshot
                                                                                 .data?[
-                                                                            '명상'] ??
+                                                                            '공부'] ??
                                                                         0) +
                                                                     (snapshot.data?[
                                                                             '운동'] ??
@@ -558,7 +567,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                                         0)) ==
                                                                 0
                                                             ? '0%'
-                                                            : '${((snapshot.data?['공부'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(0)}%',
+                                                            : '${((snapshot.data?['명상'] ?? 0) / ((snapshot.data?['공부'] ?? 0) + (snapshot.data?['운동'] ?? 0) + (snapshot.data?['식단'] ?? 0) + (snapshot.data?['업무'] ?? 0) + (snapshot.data?['취미'] ?? 0) + (snapshot.data?['명상'] ?? 0)) * 100).toStringAsFixed(1)}%',
                                                         radius: radius,
                                                         titleStyle:
                                                             const TextStyle(

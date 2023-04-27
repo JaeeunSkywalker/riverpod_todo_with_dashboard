@@ -163,16 +163,36 @@ class ExitAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('앱 종료'),
-      content: const Text('앱을 종료하시겠습니까?'),
+      title: Text(
+        '앱 종료',
+        style: TextStyle(
+          color: black,
+        ),
+      ),
+      content: Text(
+        '앱을 종료하시겠습니까?',
+        style: TextStyle(
+          color: black,
+        ),
+      ),
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('취소'),
+          child: Text(
+            '취소',
+            style: TextStyle(
+              color: black,
+            ),
+          ),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('종료'),
+          child: Text(
+            '종료',
+            style: TextStyle(
+              color: black,
+            ),
+          ),
         ),
       ],
     );
