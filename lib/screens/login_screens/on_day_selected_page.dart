@@ -148,6 +148,12 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                       )
                       .toList();
 
+                  void handleDelete(int index) {
+                    setState(() {
+                      filteredData.removeAt(index);
+                    });
+                  }
+
                   return Expanded(
                     child: filteredData.isEmpty
                         ? Text(
@@ -253,10 +259,11 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                                 )
                                                                 .delete();
                                                             //selectedTime 테스트
+                                                            //setState(() {});
+                                                            handleDelete(index);
                                                             Navigator.of(
                                                                     context)
                                                                 .pop();
-                                                            setState(() {});
                                                           },
                                                           child: Text(
                                                             '삭제',
@@ -438,6 +445,19 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                                                                   ),
                                                                 );
                                                               }
+                                                              // 가져온 데이터가 있는 경우
+                                                              final filteredData =
+                                                                  snapshot.data!
+                                                                      .where(
+                                                                        (element) =>
+                                                                            element.contains(
+                                                                          widget
+                                                                              .selectedDay
+                                                                              .toString()
+                                                                              .substring(0, 10),
+                                                                        ),
+                                                                      )
+                                                                      .toList();
                                                               return Icon(
                                                                 Icons.check,
                                                                 color: filteredData[index]
