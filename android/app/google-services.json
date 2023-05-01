@@ -7,23 +7,27 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:770809091103:android:14318926e3ff76abcf712a",
+        "mobilesdk_app_id": "1:770809091103:android:92b079c02b2ecd8ecf712a",
         "android_client_info": {
-          "package_name": "com.example.riverpod_todo_with_dashboard"
+          "package_name": "com.jaeeunshin.onedayonesuccess"
         }
       },
       "oauth_client": [
         {
-          "client_id": "770809091103-nro516ice3pjvn02vcoj6hud746oji19.apps.googleusercontent.com",
+          "client_id": "770809091103-co32h2v3bdc24a1ticn4keafmkbq5v0e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.riverpod_todo_with_dashboard",
+            "package_name": "com.jaeeunshin.onedayonesuccess",
             "certificate_hash": "bed2c5fadb3fd720aa8e52904af6f57a258ccb31"
           }
         },
         {
-          "client_id": "770809091103-a1don4so3b02pr0gvav66ip0vavs0h6q.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "770809091103-ie0lg347lvir33oubrtj6pf60tqi6b12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jaeeunshin.onedayonesuccess",
+            "certificate_hash": "4cd9a98846ff2f7cb1b34bdcaa1f180a19e2bc0c"
+          }
         }
       ],
       "api_key": [
@@ -33,12 +37,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "770809091103-a1don4so3b02pr0gvav66ip0vavs0h6q.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
