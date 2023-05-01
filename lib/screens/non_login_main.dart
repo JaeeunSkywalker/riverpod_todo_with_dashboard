@@ -47,8 +47,10 @@ class _NonLoginMainState extends State<NonLoginMain> {
             const SizedBox(
               height: 8.0,
             ),
-            _ScheduleList(
-              selectedDate: selectedDay,
+            Expanded(
+              child: _ScheduleList(
+                selectedDate: selectedDay,
+              ),
             ),
           ],
         ),
@@ -106,74 +108,72 @@ class _ScheduleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: 8.0,
-          right: 8.0,
-          bottom: 8.0,
-        ),
-        child: StreamBuilder<List<ScheduleWithEmoji>>(
-            stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      indigo200!,
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+        bottom: 8.0,
+      ),
+      child: StreamBuilder<List<ScheduleWithEmoji>>(
+          stream: GetIt.I<LocalDatabase>().watchSchedules(selectedDate),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    indigo200!,
+                  ),
+                ),
+              );
+            }
+            if (snapshot.hasData && snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text('스케줄이 없습니다.'),
+              );
+            }
+
+            return ListView.separated(
+              itemCount: snapshot.data!.length,
+              separatorBuilder: (context, builder) {
+                return const SizedBox(
+                  height: 8.0,
+                );
+              },
+              itemBuilder: (context, index) {
+                final scheduleWithEmoji = snapshot.data![index];
+
+                return Dismissible(
+                  key: ObjectKey(scheduleWithEmoji.schedule.id),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (DismissDirection direction) {
+                    GetIt.I<LocalDatabase>()
+                        .removeSchedule(scheduleWithEmoji.schedule.id);
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (_) {
+                          return ScheduleBottomSheet(
+                            selectedDate: selectedDate,
+                            scheduleId: scheduleWithEmoji.schedule.id,
+                          );
+                        },
+                      );
+                    },
+                    child: ScheduleCard(
+                      startTime: scheduleWithEmoji.schedule.startTime,
+                      endTime: scheduleWithEmoji.schedule.endTime,
+                      content: scheduleWithEmoji.schedule.content,
+                      //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
+                      emoji: scheduleWithEmoji.categoryEmoji.hexCode,
                     ),
                   ),
                 );
-              }
-              if (snapshot.hasData && snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text('스케줄이 없습니다.'),
-                );
-              }
-
-              return ListView.separated(
-                itemCount: snapshot.data!.length,
-                separatorBuilder: (context, builder) {
-                  return const SizedBox(
-                    height: 8.0,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  final scheduleWithEmoji = snapshot.data![index];
-
-                  return Dismissible(
-                    key: ObjectKey(scheduleWithEmoji.schedule.id),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (DismissDirection direction) {
-                      GetIt.I<LocalDatabase>()
-                          .removeSchedule(scheduleWithEmoji.schedule.id);
-                    },
-                    child: GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (_) {
-                            return ScheduleBottomSheet(
-                              selectedDate: selectedDate,
-                              scheduleId: scheduleWithEmoji.schedule.id,
-                            );
-                          },
-                        );
-                      },
-                      child: ScheduleCard(
-                        startTime: scheduleWithEmoji.schedule.startTime,
-                        endTime: scheduleWithEmoji.schedule.endTime,
-                        content: scheduleWithEmoji.schedule.content,
-                        //나중에 emoji 테이블이랑 조인해서 데이터 가져 와야 하는 부분
-                        emoji: scheduleWithEmoji.categoryEmoji.hexCode,
-                      ),
-                    ),
-                  );
-                },
-              );
-            }),
-      ),
+              },
+            );
+          }),
     );
   }
 }
