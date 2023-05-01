@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 import 'package:riverpod_todo_with_dashboard/screens/login_screens/analytics_screen.dart';
 import 'package:riverpod_todo_with_dashboard/screens/login_screens/on_day_selected_page.dart';
-import 'package:riverpod_todo_with_dashboard/database/drift_database.dart';
 
 import '../component/online_calendar.dart';
 import '../consts/colors.dart';
@@ -163,13 +163,13 @@ class ExitAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: const Text(
         '앱 종료',
         style: TextStyle(
           color: black,
         ),
       ),
-      content: Text(
+      content: const Text(
         '앱을 종료하시겠습니까?',
         style: TextStyle(
           color: black,
@@ -178,7 +178,7 @@ class ExitAlertDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
+          child: const Text(
             '취소',
             style: TextStyle(
               color: black,
@@ -187,7 +187,7 @@ class ExitAlertDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: Text(
+          child: const Text(
             '종료',
             style: TextStyle(
               color: black,
@@ -231,26 +231,26 @@ class _TodayBannerState extends State<TodayBanner> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AnalyticsScreen(),
-                  ),
-                );
-              }, // 콜백 함수 호출
-              child: const Expanded(
-                child: Text(
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AnalyticsScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
                   '활동 내역 리포트 보기',
                   style: textStyle,
                 ),
               ),
             ),
-            InkWell(
-              onTap: widget.onGoToToday, // 콜백 함수 호출
-              child: const Expanded(
-                child: Text(
+            Expanded(
+              child: InkWell(
+                onTap: widget.onGoToToday,
+                child: const Text(
                   '오늘로 돌아가기',
                   style: textStyle,
                 ),
