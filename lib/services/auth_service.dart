@@ -8,15 +8,16 @@ class AuthService {
   //Determine if the user is authenticated.
   handleAuthState() {
     return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.hasData) {
-            // ignore: prefer_const_constructors
-            return LoginScreen();
-          } else {
-            return const MainScreen();
-          }
-        });
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (BuildContext context, snapshot) {
+        if (snapshot.hasData) {
+          // ignore: prefer_const_constructors
+          return LoginScreen();
+        } else {
+          return const MainScreen();
+        }
+      },
+    );
   }
 
   signInWithGoogle() async {
@@ -24,9 +25,13 @@ class AuthService {
     final GoogleSignInAccount? googleUser =
         await GoogleSignIn(scopes: <String>["email"]).signIn();
 
+    if (googleUser == null) {
+      return;
+    }
+
     // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+        await googleUser.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(

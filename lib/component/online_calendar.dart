@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // ignore: must_be_immutable
-class Calendar extends StatelessWidget {
+class OnlineCalendar extends StatelessWidget {
   //지금 내가 누른 거
   final DateTime? selectedDay;
   //보여줄 캘린더 월의 기준
@@ -15,7 +15,7 @@ class Calendar extends StatelessWidget {
 
   //final DateTime today = DateTime.now();
 
-  Calendar({
+  OnlineCalendar({
     required this.selectedDay,
     required this.focusedDay,
     required this.onDaySelected,
@@ -100,6 +100,7 @@ class Calendar extends StatelessWidget {
             );
           }
           return TableCalendar(
+            daysOfWeekHeight: 40.0,
             //locale: 'ko_KR',
             focusedDay: focusedDay,
             firstDay: DateTime(2023),

@@ -18,25 +18,31 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         body: Center(
           child: Column(
-            children: const [
-              Expanded(
-                child: Center(child: HomeBanner()),
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: const Center(child: HomeBanner()),
               ),
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "🌱",
-                  style: TextStyle(
-                    fontFamily: 'NotoColorEmoji',
-                    fontSize: 30.0,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.20,
+                child: const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "🌱",
+                    style: TextStyle(
+                      fontFamily: 'NotoColorEmoji',
+                      fontSize: 30.0,
+                    ),
                   ),
                 ),
               ),
-              Expanded(
-                child: Center(child: HomeMiddleScreen()),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: const Center(child: HomeMiddleScreen()),
               ),
-              Expanded(
-                child: Center(child: ButtonsScreen()),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
+                child: const Center(child: ButtonsScreen()),
               ),
             ],
           ),

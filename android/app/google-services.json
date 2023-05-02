@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "770809091103-co32h2v3bdc24a1ticn4keafmkbq5v0e.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.jaeeunshin.onedayonesuccess",
-            "certificate_hash": "bed2c5fadb3fd720aa8e52904af6f57a258ccb31"
-          }
-        },
-        {
           "client_id": "770809091103-ie0lg347lvir33oubrtj6pf60tqi6b12.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

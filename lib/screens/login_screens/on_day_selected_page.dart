@@ -161,7 +161,6 @@ class _OnDaySelectedPageState extends State<OnDaySelectedPage> {
                             style: textStyle.copyWith(fontSize: 22.0),
                           )
                         : ListView.builder(
-                            physics: const BouncingScrollPhysics(),
                             itemCount: filteredData.length,
                             itemBuilder: (context, index) {
                               List<String> checkboxValues = [];

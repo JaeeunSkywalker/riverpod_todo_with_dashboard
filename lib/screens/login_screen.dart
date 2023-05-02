@@ -72,11 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 21.0,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.04,
             ),
             SizedBox(
-              height: 95.0,
+              height: MediaQuery.of(context).size.height * 0.15,
               child: FutureBuilder<List<CategoryMonthEmoji>>(
                 future: GetIt.I<LocalDatabase>().getCategoryMonthEmojis(),
                 builder: (context, snapshot) {
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(
               child: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.58,
-                child: Calendar(
+                child: OnlineCalendar(
                   selectedDay: selectedDay,
                   focusedDay: focusedDay,
                   onDaySelected: OnDaySelected,
@@ -229,30 +229,35 @@ class _TodayBannerState extends State<TodayBanner> {
           vertical: 8.0,
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AnalyticsScreen(),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AnalyticsScreen(),
+                    ),
+                  );
+                }, // 콜백 함수 호출
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '활동 내역 리포트 보기',
+                    style: textStyle,
                   ),
-                );
-              }, // 콜백 함수 호출
-              child: const Expanded(
-                child: Text(
-                  '활동 내역 리포트 보기',
-                  style: textStyle,
                 ),
               ),
             ),
-            InkWell(
-              onTap: widget.onGoToToday, // 콜백 함수 호출
-              child: const Expanded(
-                child: Text(
-                  '오늘로 돌아가기',
-                  style: textStyle,
+            Expanded(
+              child: InkWell(
+                onTap: widget.onGoToToday, // 콜백 함수 호출
+                child: const Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '오늘로 돌아가기',
+                    style: textStyle,
+                  ),
                 ),
               ),
             ),
