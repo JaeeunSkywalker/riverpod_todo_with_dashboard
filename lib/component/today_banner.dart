@@ -45,10 +45,10 @@ class _TodayBannerState extends State<TodayBanner> {
                 style: textStyle,
               ),
             ),
-            InkWell(
-              onTap: widget.onGoToToday, // 콜백 함수 호출
-              child: const Expanded(
-                child: Text(
+            Expanded(
+              child: InkWell(
+                onTap: widget.onGoToToday, // 콜백 함수 호출
+                child: const Text(
                   textAlign: TextAlign.center,
                   '오늘로 돌아가기',
                   style: textStyle,

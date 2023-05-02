@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>770809091103-qgifq854t26g5qfcls5ojanehr986def.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.770809091103-qgifq854t26g5qfcls5ojanehr986def</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>770809091103-2j38mttoa1lpmlqehjqtomnae2u0m4qg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBK1thb5LUe2IKsJP_7dSI45LC14c0Uygs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>770809091103</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.riverpodTodoWithDashboard</string>
+	<key>PROJECT_ID</key>
+	<string>day1success-65a85</string>
+	<key>STORAGE_BUCKET</key>
+	<string>day1success-65a85.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:770809091103:ios:73f9140a6e46bb7ccf712a</string>
+</dict>
+</plist>

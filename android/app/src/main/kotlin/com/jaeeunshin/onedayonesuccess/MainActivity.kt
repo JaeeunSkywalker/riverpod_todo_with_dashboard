@@ -1,4 +1,4 @@
-package com.example.riverpod_todo_with_dashboard
+package com.jaeeunshin.onedayonesuccess
 
 import io.flutter.embedding.android.FlutterActivity
 

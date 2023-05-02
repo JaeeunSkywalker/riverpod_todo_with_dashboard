@@ -92,7 +92,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: GridView.count(
-                  physics: const BouncingScrollPhysics(),
                   crossAxisCount: 1,
                   crossAxisSpacing: 16.0,
                   mainAxisSpacing: 16.0,
